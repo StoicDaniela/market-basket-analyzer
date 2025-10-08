@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Basket Analyzer - Анализатор на пазарната кошница</title>
+    
+    <!-- PDF LIBRARIES - BOTH REQUIRED -->
+    <script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6; color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px; margin: 0 auto; padding: 20px;
+            background: white; margin-top: 20px; margin-bottom: 20px;
+            border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .header {
+            text-align: center; margin-bottom: 40px; padding: 30px 0;
+            background: linear-gradient(135deg, #4a90e2 0%, #50c9c3 100%);
+            border-radius: 15px; color: white;
+        }
+        .header h1 {
+            font-size: 2.5em; margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .header p { font-size: 1.2em; opacity: 0.9; }
+        .upload-section {
+            background: #f8f9fa; padding: 30px; border-radius: 15px;
+            margin-bottom: 30px; border: 2px dashed #007bff;
+            text-align: center; transition: all 0.3s ease;
+        }
+        .upload-section:hover {
+            border-color: #0056b3; background: #e3f2fd;
+        }
+        .file-input-wrapper {
+            position: relative; display: inline-block; margin: 20px 0;
+        }
+        .file-input { display: none; }
+        .file-input-label {
+            background: #007bff; color: white; padding: 15px 30px;
+            border-radius: 25px; cursor: pointer; font-size: 1.1em;
+            transition: all 0.3s ease; display: inline-block;
+        }
+        .file-input-label:hover {
+            background: #0056b3; transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,123,255,0.3);
+        }
+        .demo-button {
+            background: #28a745; color: white; padding: 12px 25px;
+            border: none; border-radius: 20px; cursor: pointer;
+            font-size: 1em; margin: 10px; transition: all 0.3s ease;
+        }
+        .demo-button:hover {
+            background: #218838; transform: translateY(-2px);
+        }
+        .btn {
+            background: #dc3545; color: white; padding: 12px 25px;
+            border: none; border-radius: 20px; cursor: pointer;
+            font-size: 1em; margin: 10px; transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background: #c82333; transform: translateY(-2px);
+        }
+        .analysis-section {
+            background: #f8f9fa; padding: 30px; border-radius: 15px;
+            margin-bottom: 30px; border-left: 5px solid #007bff;
+        }
+        .section-title {
+            color: #007bff; font-size: 1.5em; margin-bottom: 20px;
+            border-bottom: 2px solid #e9ecef; padding-bottom: 10px;
+        }
+        .metric-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px; margin-bottom: 30px;
+        }
+        .metric-card {
+            background: white; padding: 20px; border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-left: 4px solid #007bff;
+        }
+        .metric-value {
+            font-size: 2em; font-weight: bold; color: #007bff; margin-bottom: 5px;
+        }
+        .metric-label { color: #666; font-size: 0.9em; }
+        .notification {
+            position: fixed; top: 20px; right: 20px; z-index: 1000;
+            padding: 15px 25px; border-radius: 10px; color: white;
+            font-weight: bold; transition: all 0.3s ease;
+        }
+        .notification.success { background: #28a745; }
+        .notification.error { background: #dc3545; }
+        .notification.warning { background: #ffc107; color: #000; }
+        .rules-table {
+            width: 100%; border-collapse: collapse; margin-top: 20px;
+            background: white; border-radius: 10px; overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .rules-table th, .rules-table td {
+            padding: 12px; text-align: left; border-bottom: 1px solid #e9ecef;
+        }
+        .rules-table th {
+            background: #007bff; color: white; font-weight: bold;
+        }
+        .rules-table tr:hover { background: #f8f9fa; }
+        .export-buttons {
+            text-align: center; margin: 30px 0;
+        }
+        .progress-container {
+            background: #e9ecef; border-radius: 10px; padding: 3px; margin: 20px 0;
+        }
+        .progress-bar {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            height: 20px; border-radius: 7px; transition: width 0.3s ease;
+            text-align: center; color: white; font-size: 0.8em; line-height: 20px;
+        }
+        .history-section {
+            background: #f8f9fa; padding: 20px; border-radius: 10px;
+            margin-bottom: 20px; border-left: 4px solid #28a745;
+        }
+        .history-item {
+            background: white; padding: 15px; border-radius: 8px;
+            margin-bottom: 10px; border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        .history-item:hover {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        .history-actions {
+            text-align: right; margin-top: 10px;
+        }
+        .history-actions button {
+            background: #007bff; color: white; border: none;
+            padding: 5px 10px; border-radius: 5px; cursor: pointer;
+            margin-left: 5px; font-size: 0.9em;
+        }
+        .history-actions button:hover { background: #0056b3; }
+        .delete-btn { background: #dc3545 !important; }
+        .delete-btn:hover { background: #c82333 !important; }
+        .file-info {
+            background: #e8f4fd; padding: 15px; border-radius: 10px;
+            margin-bottom: 20px; border-left: 4px solid #007bff;
+        }
+        
+        /* ERROR MODAL STYLES */
+        .error-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); z-index: 10000; display: none;
+            justify-content: center; align-items: center;
+        }
+        .error-modal-content {
+            background: white; padding: 30px; border-radius: 15px;
+            max-width: 500px; width: 90%; text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .error-modal-title {
+            color: #dc3545; font-size: 1.5em; margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .error-modal-text {
+            margin-bottom: 20px; font-size: 1.1em; line-height: 1.5;
+        }
+        .error-modal-close {
+            background: #007bff; color: white; border: none;
+            padding: 10px 25px; border-radius: 5px; cursor: pointer;
+            font-size: 1em;
+        }
+        .error-modal-close:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <!-- ERROR MODAL -->
+    <div id="errorModal" class="error-modal">
+        <div class="error-modal-content">
+            <div class="error-modal-title">⚠️ Грешка</div>
+            <div id="errorModalText" class="error-modal-text"></div>
+            <button class="error-modal-close" onclick="closeErrorModal()">Затвори</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🛒 Market Basket Analyzer</h1>
+            <p>Професионален анализатор на пазарната кошница за бизнес аналитика</p>
+        </div>
+
+        <div class="upload-section">
+            <h3>📊 Качете файл с данни</h3>
+            <p>Поддържани формати: CSV, Excel (.xlsx)</p>
+            
+            <div class="file-input-wrapper">
+                <input type="file" id="fileInput" class="file-input" accept=".csv,.xlsx" onchange="handleFile(event)">
+                <label for="fileInput" class="file-input-label">📁 Избери файл</label>
+            </div>
+            
+            <div>
+                <button class="demo-button" onclick="loadDemoData()">🎯 Демо данни</button>
+                <button class="btn" onclick="showHistory()">📋 История</button>
+            </div>
+        </div>
+
+        <div class="export-buttons" style="display: none;" id="exportButtons">
+            <button class="btn" onclick="exportToPDF()">📑 Експорт PDF</button>
+            <button class="btn" onclick="exportToExcel()">📊 Експорт Excel</button>
+        </div>
+
+        <div id="analysisResult"></div>
+        <div id="historySection" style="display: none;"></div>
+    </div>
+
+    <div id="notification" class="notification" style="display: none;"></div>
+
+    <script>
+        console.log('🚀 JavaScript starting...');
+        
+        let processedData = null;
+        let currentAnalysisResult = null;
+
+        function showErrorModal(title, message) {
+            console.log('📢 Showing error modal:', title, message);
+            document.getElementById('errorModalText').innerHTML = '<strong>' + title + '</strong><br><br>' + message;
+            document.getElementById('errorModal').style.display = 'flex';
+        }
+
+        function closeErrorModal() {
+            document.getElementById('errorModal').style.display = 'none';
+        }
+
+        function checkLibraries() {
+            const missing = [];
+            
+            if (typeof XLSX === 'undefined') missing.push('XLSX (Excel export)');
+            if (typeof jsPDF === 'undefined') missing.push('jsPDF (PDF generation)');
+            if (typeof html2canvas === 'undefined') missing.push('html2canvas (PDF screenshots)');
+            
+            if (missing.length > 0) {
+                showErrorModal('Библиотеки не са заредени', 
+                    'Следните необходими библиотеки не са заредени:<br><br>' +
+                    missing.map(lib => '• ' + lib).join('<br>') + 
+                    '<br><br>Моля, опреснете страницата или проверете интернет връзката си.');
+                return false;
+            }
+            
+            console.log('✅ All libraries loaded successfully');
+            return true;
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000);
+        }
+
+        function handleFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            console.log('📁 File selected:', file.name, file.type, file.size);
+            showNotification('Обработване на файл...', 'success');
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    parseData(e.target.result, file.name);
+                } catch (error) {
+                    console.error('❌ File processing error:', error);
+                    showErrorModal('Грешка при обработка на файл', error.message);
+                }
+            };
+
+            if (file.name.toLowerCase().endsWith('.csv')) {
+                reader.readAsText(file);
+            } else if (file.name.toLowerCase().endsWith('.xlsx')) {
+                reader.readAsArrayBuffer(file);
+            }
+        }
+
+        function loadDemoData() {
+            console.log('🎯 Loading demo data...');
+            showNotification('Зареждане на демо данни...', 'success');
+            
+            fetch('demo_market_basket_data.csv')
+                .then(response => response.text())
+                .then(data => {
+                    parseData(data, 'demo_market_basket_data.csv');
+                })
+                .catch(error => {
+                    console.error('❌ Demo data error:', error);
+                    showErrorModal('Грешка при зареждане на демо данни', 'Не мога да заредя демо файла. Моля, качете собствен файл.');
+                });
+        }
+
+        function parseData(data, fileName) {
+            console.log('📊 Parsing data for file:', fileName);
+            
+            try {
+                let parsedData;
+                
+                if (fileName.toLowerCase().endsWith('.xlsx')) {
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const sheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[sheetName];
+                    parsedData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                } else {
+                    parsedData = data.split('\n').map(row => 
+                        row.split(',').map(cell => cell.trim().replace(/"/g, ''))
+                    ).filter(row => row.length > 1 && row.some(cell => cell.length > 0));
+                }
+
+                if (parsedData.length < 2) {
+                    throw new Error('Файлът трябва да съдържа поне 2 реда (заглавие + данни)');
+                }
+
+                const headers = parsedData[0];
+                const dataRows = parsedData.slice(1);
+
+                processedData = {
+                    fileName: fileName,
+                    headers: headers,
+                    data: dataRows,
+                    uploadTime: new Date().toISOString()
+                };
+
+                console.log('✅ Data parsed successfully. Rows:', dataRows.length, 'Columns:', headers.length);
+                displayFileInfo();
+                performAnalysis();
+                
+            } catch (error) {
+                console.error('❌ Parse error:', error);
+                showErrorModal('Грешка при анализиране на файл', error.message);
+            }
+        }
+
+        function displayFileInfo() {
+            const fileInfo = `
+                <div class="file-info">
+                    <h3>📄 Информация за файла</h3>
+                    <p><strong>Име:</strong> ${processedData.fileName}</p>
+                    <p><strong>Записи:</strong> ${processedData.data.length}</p>
+                    <p><strong>Колони:</strong> ${processedData.headers.length}</p>
+                    <p><strong>Заредено:</strong> ${new Date(processedData.uploadTime).toLocaleString('bg-BG')}</p>
+                </div>
+            `;
+            
+            document.getElementById('analysisResult').innerHTML = fileInfo;
+            document.getElementById('exportButtons').style.display = 'block';
+        }
+
+        function performAnalysis() {
+            console.log('🔍 Starting market basket analysis...');
+            showNotification('Извършване на Market Basket анализ...', 'success');
+
+            try {
+                const transactions = processedData.data.map(row => {
+                    return row.filter(item => item && item.trim() !== '').map(item => item.trim());
+                }).filter(transaction => transaction.length > 0);
+
+                const itemFrequency = {};
+                const pairFrequency = {};
+                const totalTransactions = transactions.length;
+
+                transactions.forEach(transaction => {
+                    const uniqueItems = [...new Set(transaction)];
+                    
+                    uniqueItems.forEach(item => {
+                        itemFrequency[item] = (itemFrequency[item] || 0) + 1;
+                    });
+
+                    for (let i = 0; i < uniqueItems.length; i++) {
+                        for (let j = i + 1; j < uniqueItems.length; j++) {
+                            const pair = [uniqueItems[i], uniqueItems[j]].sort().join(' → ');
+                            pairFrequency[pair] = (pairFrequency[pair] || 0) + 1;
+                        }
+                    }
+                });
+
+                const rules = Object.entries(pairFrequency).map(([pair, frequency]) => {
+                    const [item1, item2] = pair.split(' → ');
+                    const support = frequency / totalTransactions;
+                    const confidence1 = frequency / itemFrequency[item1];
+                    const confidence2 = frequency / itemFrequency[item2];
+                    const lift = frequency / ((itemFrequency[item1] / totalTransactions) * (itemFrequency[item2] / totalTransactions));
+
+                    return {
+                        antecedent: item1,
+                        consequent: item2,
+                        support: support,
+                        confidence: Math.max(confidence1, confidence2),
+                        lift: lift / totalTransactions,
+                        frequency: frequency
+                    };
+                }).sort((a, b) => b.lift - a.lift);
+
+                const topItems = Object.entries(itemFrequency)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 10);
+
+                currentAnalysisResult = {
+                    totalTransactions,
+                    uniqueItems: Object.keys(itemFrequency).length,
+                    averageBasketSize: transactions.reduce((sum, t) => sum + t.length, 0) / transactions.length,
+                    topItems,
+                    rules: rules.slice(0, 20),
+                    generatedAt: new Date().toISOString()
+                };
+
+                displayAnalysisResults();
+                saveToHistory();
+
+            } catch (error) {
+                console.error('❌ Analysis error:', error);
+                showErrorModal('Грешка при анализ', error.message);
+            }
+        }
+
+        function displayAnalysisResults() {
+            const results = currentAnalysisResult;
+            
+            const html = `
+                <div class="analysis-section">
+                    <h2 class="section-title">📊 Резултати от анализа</h2>
+                    
+                    <div class="metric-grid">
+                        <div class="metric-card">
+                            <div class="metric-value">${results.totalTransactions}</div>
+                            <div class="metric-label">Общо транзакции</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">${results.uniqueItems}</div>
+                            <div class="metric-label">Уникални продукти</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">${results.averageBasketSize.toFixed(1)}</div>
+                            <div class="metric-label">Средна кошница</div>
+                        </div>
+                    </div>
+
+                    <h3>🏆 Най-популярни продукти</h3>
+                    <table class="rules-table">
+                        <thead>
+                            <tr>
+                                <th>Продукт</th>
+                                <th>Покупки</th>
+                                <th>Процент</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${results.topItems.map(([item, freq]) => `
+                                <tr>
+                                    <td>${item}</td>
+                                    <td>${freq}</td>
+                                    <td>${((freq / results.totalTransactions) * 100).toFixed(1)}%</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+
+                    <h3>🔗 Асоциативни правила</h3>
+                    <table class="rules-table">
+                        <thead>
+                            <tr>
+                                <th>Ако купи</th>
+                                <th>Ще купи и</th>
+                                <th>Support</th>
+                                <th>Confidence</th>
+                                <th>Lift</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${results.rules.map(rule => `
+                                <tr>
+                                    <td>${rule.antecedent}</td>
+                                    <td>${rule.consequent}</td>
+                                    <td>${(rule.support * 100).toFixed(2)}%</td>
+                                    <td>${(rule.confidence * 100).toFixed(2)}%</td>
+                                    <td>${rule.lift.toFixed(3)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+
+                    <h3>💡 Бизнес препоръки</h3>
+                    <div class="analysis-section">
+                        <ul>
+                            <li><strong>Кръстосано препоръчване:</strong> Препоръчвайте ${results.rules[0]?.consequent || 'свързани продукти'} на клиенти, които купуват ${results.rules[0]?.antecedent || 'основни продукти'}</li>
+                            <li><strong>Позициониране:</strong> Поставете ${results.topItems[0]?.[0] || 'популярни продукти'} на видни места</li>
+                            <li><strong>Промоции:</strong> Създайте пакетни оферти за често купувани заедно продукти</li>
+                            <li><strong>Инвентар:</strong> Осигурете достатъчни количества от топ ${Math.min(5, results.topItems.length)} продукта</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('analysisResult').innerHTML = html;
+            showNotification('Анализът е завършен успешно! 🎉', 'success');
+        }
+
+        function exportToPDF() {
+            console.log('📑 Starting PDF export...');
+            
+            if (!processedData || !currentAnalysisResult) {
+                showErrorModal('Няма данни за експорт', 'Моля, първо направете анализ на данни.');
+                return;
+            }
+            
+            if (!checkLibraries()) {
+                return;
+            }
+            
+            try {
+                showNotification('Генериране на PDF файл...', 'success');
+                
+                // Get the analysis results element
+                const element = document.getElementById('analysisResult');
+                
+                if (!element) {
+                    throw new Error('Не намирам резултатите от анализа');
+                }
+                
+                html2canvas(element, {
+                    scale: 1,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff'
+                }).then(canvas => {
+                    const doc = new jsPDF.jsPDF();
+                    const imgData = canvas.toDataURL('image/png');
+                    
+                    const pdfWidth = doc.internal.pageSize.getWidth();
+                    const pdfHeight = doc.internal.pageSize.getHeight();
+                    const canvasWidth = canvas.width;
+                    const canvasHeight = canvas.height;
+                    
+                    const ratio = Math.min(pdfWidth / canvasWidth, pdfHeight / canvasHeight);
+                    const imgWidth = canvasWidth * ratio;
+                    const imgHeight = canvasHeight * ratio;
+                    
+                    const marginX = (pdfWidth - imgWidth) / 2;
+                    const marginY = 10;
+                    
+                    doc.addImage(imgData, 'PNG', marginX, marginY, imgWidth, imgHeight);
+                    
+                    const fileName = `Market_Basket_Analysis_${processedData.fileName.replace(/\.[^/.]+$/, "")}_${new Date().getTime()}.pdf`;
+                    doc.save(fileName);
+                    
+                    console.log('✅ PDF export completed');
+                    showNotification('PDF файлът е изтеглен успешно! 📄', 'success');
+                    
+                }).catch(error => {
+                    console.error('❌ PDF Canvas Error:', error);
+                    showErrorModal('Грешка при генериране на PDF', 'Не мога да направя снимка на резултатите: ' + error.message);
+                });
+                
+            } catch (error) {
+                console.error('❌ PDF Export Error:', error);
+                showErrorModal('Грешка при генериране на PDF', error.message);
+            }
+        }
+
+        function exportToExcel() {
+            console.log('📊 Starting Excel export...');
+            
+            if (!processedData || !currentAnalysisResult) {
+                showErrorModal('Няма данни за експорт', 'Моля, първо направете анализ на данни.');
+                return;
+            }
+            
+            if (!checkLibraries()) {
+                return;
+            }
+            
+            try {
+                showNotification('Генериране на Excel файл...', 'success');
+                
+                const wb = XLSX.utils.book_new();
+                
+                // Summary sheet
+                const summaryData = [
+                    ['Market Basket Analysis Report'],
+                    ['Файл:', processedData.fileName],
+                    ['Дата:', new Date().toLocaleString('bg-BG')],
+                    [''],
+                    ['Общо транзакции:', currentAnalysisResult.totalTransactions],
+                    ['Уникални продукти:', currentAnalysisResult.uniqueItems],
+                    ['Средна кошница:', currentAnalysisResult.averageBasketSize.toFixed(2)],
+                ];
+                
+                const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
+                XLSX.utils.book_append_sheet(wb, summarySheet, 'Обобщение');
+                
+                // Top items sheet
+                const topItemsData = [
+                    ['Продукт', 'Покупки', 'Процент'],
+                    ...currentAnalysisResult.topItems.map(([item, freq]) => [
+                        item, 
+                        freq, 
+                        ((freq / currentAnalysisResult.totalTransactions) * 100).toFixed(1) + '%'
+                    ])
+                ];
+                
+                const topItemsSheet = XLSX.utils.aoa_to_sheet(topItemsData);
+                XLSX.utils.book_append_sheet(wb, topItemsSheet, 'Топ продукти');
+                
+                // Rules sheet
+                const rulesData = [
+                    ['Ако купи', 'Ще купи и', 'Support %', 'Confidence %', 'Lift'],
+                    ...currentAnalysisResult.rules.map(rule => [
+                        rule.antecedent,
+                        rule.consequent,
+                        (rule.support * 100).toFixed(2),
+                        (rule.confidence * 100).toFixed(2),
+                        rule.lift.toFixed(3)
+                    ])
+                ];
+                
+                const rulesSheet = XLSX.utils.aoa_to_sheet(rulesData);
+                XLSX.utils.book_append_sheet(wb, rulesSheet, 'Асоциативни правила');
+                
+                const fileName = `Market_Basket_Analysis_${processedData.fileName.replace(/\.[^/.]+$/, "")}_${new Date().getTime()}.xlsx`;
+                XLSX.writeFile(wb, fileName);
+                
+                console.log('✅ Excel export completed');
+                showNotification('Excel файлът е изтеглен успешно! 📊', 'success');
+                
+            } catch (error) {
+                console.error('❌ Excel Export Error:', error);
+                showErrorModal('Грешка при генериране на Excel', error.message);
+            }
+        }
+
+        function saveToHistory() {
+            try {
+                const historyData = JSON.parse(localStorage.getItem('marketBasketHistory') || '[]');
+                
+                const analysisRecord = {
+                    id: Date.now(),
+                    fileName: processedData.fileName,
+                    uploadTime: processedData.uploadTime,
+                    analysisTime: currentAnalysisResult.generatedAt,
+                    summary: {
+                        totalTransactions: currentAnalysisResult.totalTransactions,
+                        uniqueItems: currentAnalysisResult.uniqueItems,
+                        averageBasketSize: currentAnalysisResult.averageBasketSize,
+                        topRule: currentAnalysisResult.rules[0] || null
+                    }
+                };
+                
+                historyData.unshift(analysisRecord);
+                if (historyData.length > 20) historyData.splice(20);
+                
+                localStorage.setItem('marketBasketHistory', JSON.stringify(historyData));
+                console.log('✅ Analysis saved to history');
+                
+            } catch (error) {
+                console.error('❌ History save error:', error);
+            }
+        }
+
+        function showHistory() {
+            try {
+                const historyData = JSON.parse(localStorage.getItem('marketBasketHistory') || '[]');
+                
+                if (historyData.length === 0) {
+                    showNotification('Историята е празна', 'warning');
+                    return;
+                }
+
+                const historyHtml = `
+                    <div class="history-section">
+                        <h2 class="section-title">📋 История на анализите</h2>
+                        ${historyData.map(record => `
+                            <div class="history-item">
+                                <h4>${record.fileName}</h4>
+                                <p><strong>Анализирано:</strong> ${new Date(record.analysisTime).toLocaleString('bg-BG')}</p>
+                                <p><strong>Транзакции:</strong> ${record.summary.totalTransactions} | <strong>Продукти:</strong> ${record.summary.uniqueItems}</p>
+                                ${record.summary.topRule ? `<p><strong>Топ правило:</strong> ${record.summary.topRule.antecedent} → ${record.summary.topRule.consequent}</p>` : ''}
+                                <div class="history-actions">
+                                    <button onclick="viewAnalysis(${record.id})">👁️ Преглед</button>
+                                    <button class="delete-btn" onclick="deleteFromHistory(${record.id})">🗑️ Изтрий</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+
+                document.getElementById('analysisResult').innerHTML = historyHtml;
+                document.getElementById('exportButtons').style.display = 'none';
+                
+            } catch (error) {
+                console.error('❌ History display error:', error);
+                showErrorModal('Грешка при показване на история', error.message);
+            }
+        }
+
+        function viewAnalysis(id) {
+            showNotification('Функцията за преглед ще бъде добавена скоро', 'warning');
+        }
+
+        function deleteFromHistory(id) {
+            if (!confirm('Сигурни ли сте, че искате да изтриете този анализ?')) return;
+            
+            try {
+                const historyData = JSON.parse(localStorage.getItem('marketBasketHistory') || '[]');
+                const filteredData = historyData.filter(record => record.id !== id);
+                localStorage.setItem('marketBasketHistory', JSON.stringify(filteredData));
+                showHistory();
+                showNotification('Анализът е изтрит от историята', 'success');
+                
+            } catch (error) {
+                console.error('❌ History delete error:', error);
+                showErrorModal('Грешка при изтриване', error.message);
+            }
+        }
+
+        // Check libraries on page load
+        window.addEventListener('load', function() {
+            console.log('✅ JavaScript loaded successfully');
+            setTimeout(checkLibraries, 1000);
+        });
+        
+    </script>
+</body>
+</html>
