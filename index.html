@@ -7,298 +7,120 @@
     <script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
+            line-height: 1.6; color: #333;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
         }
-        
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            background: white;
-            margin-top: 20px;
-            margin-bottom: 20px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 1200px; margin: 0 auto; padding: 20px;
+            background: white; margin-top: 20px; margin-bottom: 20px;
+            border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
-        
         .header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding: 30px 0;
+            text-align: center; margin-bottom: 40px; padding: 30px 0;
             background: linear-gradient(135deg, #4a90e2 0%, #50c9c3 100%);
-            border-radius: 15px;
-            color: white;
+            border-radius: 15px; color: white;
         }
-        
         .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
+            font-size: 2.5em; margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
-        
-        .header p {
-            font-size: 1.2em;
-            opacity: 0.9;
-        }
-        
+        .header p { font-size: 1.2em; opacity: 0.9; }
         .upload-section {
-            background: #f8f9fa;
-            padding: 30px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            border: 2px dashed #007bff;
-            text-align: center;
-            transition: all 0.3s ease;
+            background: #f8f9fa; padding: 30px; border-radius: 15px;
+            margin-bottom: 30px; border: 2px dashed #007bff;
+            text-align: center; transition: all 0.3s ease;
         }
-        
         .upload-section:hover {
-            border-color: #0056b3;
-            background: #e3f2fd;
+            border-color: #0056b3; background: #e3f2fd;
         }
-        
         .file-input-wrapper {
-            position: relative;
-            display: inline-block;
-            margin: 20px 0;
+            position: relative; display: inline-block; margin: 20px 0;
         }
-        
-        .file-input {
-            display: none;
-        }
-        
+        .file-input { display: none; }
         .file-input-label {
-            background: #007bff;
-            color: white;
-            padding: 15px 30px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 1.1em;
-            transition: all 0.3s ease;
-            display: inline-block;
+            background: #007bff; color: white; padding: 15px 30px;
+            border-radius: 25px; cursor: pointer; font-size: 1.1em;
+            transition: all 0.3s ease; display: inline-block;
         }
-        
         .file-input-label:hover {
-            background: #0056b3;
-            transform: translateY(-2px);
+            background: #0056b3; transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0,123,255,0.3);
         }
-        
         .btn {
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 1em;
-            margin: 10px;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
+            background: #28a745; color: white; border: none;
+            padding: 12px 24px; border-radius: 25px; cursor: pointer;
+            font-size: 1em; margin: 10px; transition: all 0.3s ease;
+            text-decoration: none; display: inline-block;
         }
-        
         .btn:hover {
-            background: #218838;
-            transform: translateY(-2px);
+            background: #218838; transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(40,167,69,0.3);
         }
-        
-        .btn-group {
-            text-align: center;
-            margin: 30px 0;
-        }
-        
+        .btn-group { text-align: center; margin: 30px 0; }
         .results-section {
-            margin-top: 30px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 15px;
-            min-height: 100px;
+            margin-top: 30px; padding: 20px; background: #f8f9fa;
+            border-radius: 15px; min-height: 100px;
         }
-        
         .chart-container {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            margin: 20px 0;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            background: white; padding: 30px; border-radius: 15px;
+            margin: 20px 0; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
-        
         .chart-title {
-            color: #4a90e2;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-            text-align: center;
-            border-bottom: 2px solid #e9ecef;
+            color: #4a90e2; margin-bottom: 20px; font-size: 1.5em;
+            text-align: center; border-bottom: 2px solid #e9ecef;
             padding-bottom: 10px;
         }
-        
         .product-analysis {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px;
-            margin: 20px 0;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px; margin: 20px 0;
         }
-        
         .product-card {
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 20px;
-            border-radius: 15px;
-            border-left: 5px solid #28a745;
+            padding: 20px; border-radius: 15px; border-left: 5px solid #28a745;
             box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         }
-        
         .product-card h4 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-            font-size: 1.2em;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            color: #2c3e50; margin-bottom: 15px; font-size: 1.2em;
+            display: flex; align-items: center; gap: 8px;
         }
-        
         .product-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid #dee2e6;
-            font-size: 0.95em;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 8px 0; border-bottom: 1px solid #dee2e6; font-size: 0.95em;
         }
-        
-        .product-item:last-child {
-            border-bottom: none;
-        }
-        
+        .product-item:last-child { border-bottom: none; }
         .product-item span:first-child {
-            font-weight: 500;
-            color: #495057;
+            font-weight: 500; color: #495057;
         }
-        
         .product-item span:last-child {
-            font-weight: bold;
-            color: #28a745;
-            background: #e8f5e8;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.9em;
+            font-weight: bold; color: #28a745; background: #e8f5e8;
+            padding: 2px 8px; border-radius: 12px; font-size: 0.9em;
         }
-        
         .business-insights {
             background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-            padding: 20px;
-            border-radius: 15px;
-            border-left: 5px solid #ffc107;
+            padding: 20px; border-radius: 15px; border-left: 5px solid #ffc107;
             margin: 20px 0;
         }
-        
         .business-insights h4 {
-            color: #856404;
-            margin-bottom: 15px;
-            font-size: 1.2em;
+            color: #856404; margin-bottom: 15px; font-size: 1.2em;
         }
-        
         .insight-item {
-            margin: 10px 0;
-            padding: 10px;
-            background: rgba(255,255,255,0.7);
-            border-radius: 8px;
-            line-height: 1.5;
+            margin: 10px 0; padding: 10px; background: rgba(255,255,255,0.7);
+            border-radius: 8px; line-height: 1.5;
         }
-        
-        .error-message {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 20px;
-            border-radius: 15px;
-            border-left: 5px solid #dc3545;
-            margin: 20px 0;
-        }
-        
-        .error-message h4 {
-            margin-bottom: 10px;
-        }
-        
         .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 25px;
-            border-radius: 8px;
-            color: white;
-            font-weight: bold;
-            z-index: 1000;
-            opacity: 0;
-            transform: translateX(100%);
+            position: fixed; top: 20px; right: 20px; padding: 15px 25px;
+            border-radius: 8px; color: white; font-weight: bold;
+            z-index: 1000; opacity: 0; transform: translateX(100%);
             transition: all 0.3s ease;
         }
-        
-        .notification.show {
-            opacity: 1;
-            transform: translateX(0);
-        }
-        
-        .notification.success {
-            background: #28a745;
-        }
-        
-        .notification.error {
-            background: #dc3545;
-        }
-        
-        .notification.warning {
-            background: #ffc107;
-            color: #212529;
-        }
-        
-        .history-container {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            margin: 20px 0;
-            border: 1px solid #dee2e6;
-        }
-        
-        .history-item {
-            padding: 15px;
-            border-bottom: 1px solid #e9ecef;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background-color 0.3s ease;
-        }
-        
-        .history-item:hover {
-            background-color: #f8f9fa;
-        }
-        
-        .history-item:last-child {
-            border-bottom: none;
-        }
-        
-        .history-title {
-            font-weight: bold;
-            color: #495057;
-            font-size: 1.1em;
-            margin-bottom: 5px;
-        }
-        
-        .history-time {
-            font-size: 0.8em;
-            color: #6c757d;
-            margin-top: 5px;
-        }
+        .notification.show { opacity: 1; transform: translateX(0); }
+        .notification.success { background: #28a745; }
+        .notification.error { background: #dc3545; }
+        .notification.warning { background: #ffc107; color: #212529; }
     </style>
 </head>
 <body>
@@ -312,7 +134,7 @@
             <h2>📂 Качете CSV файл с данни за продажби</h2>
             <p>Файлът трябва да съдържа колони за продукти, транзакции или поръчки</p>
             <div class="file-input-wrapper">
-                <input type="file" id="csvFile" class="file-input" accept=".csv" onchange="loadFile()">
+                <input type="file" id="csvFile" class="file-input" accept=".csv">
                 <label for="csvFile" class="file-input-label">
                     📎 Изберете CSV файл
                 </label>
@@ -334,83 +156,34 @@
                 </p>
             </div>
         </div>
-        
-        <div class="history-container">
-            <h3>📚 История на анализите</h3>
-            <div id="historyContainer">
-                <p style="text-align: center; color: #666; font-style: italic;">
-                    Все още няма запазени анализи
-                </p>
-            </div>
-            <button class="btn" onclick="clearHistory()" style="background: #dc3545;">🗑️ Изчисти историята</button>
-        </div>
     </div>
 
     <script>
+        console.log('🚀 JavaScript starting...');
+        
         let processedData = null;
-        let analysisHistory = [];
         
-        // Safe storage wrapper for localStorage issues
-        const SafeStorage = {
-            isAvailable: (() => {
-                try {
-                    localStorage.setItem('test', 'test');
-                    localStorage.removeItem('test');
-                    return true;
-                } catch (e) {
-                    console.warn('localStorage недостъпен, използване на временна памет');
-                    return false;
-                }
-            })(),
-            
-            memoryStore: [],
-            
-            getItem: function(key) {
-                if (this.isAvailable) {
-                    return localStorage.getItem(key);
-                } else {
-                    return JSON.stringify(this.memoryStore);
-                }
-            },
-            
-            setItem: function(key, value) {
-                if (this.isAvailable) {
-                    localStorage.setItem(key, value);
-                } else {
-                    this.memoryStore = JSON.parse(value);
-                }
-            },
-            
-            removeItem: function(key) {
-                if (this.isAvailable) {
-                    localStorage.removeItem(key);
-                } else {
-                    this.memoryStore = [];
-                }
-            }
-        };
-        
-        function showNotification(message, type = 'success') {
+        function showNotification(message, type) {
+            console.log('📢 Notification:', message, type);
             const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
+            notification.className = 'notification ' + (type || 'success');
             notification.textContent = message;
             document.body.appendChild(notification);
             
-            setTimeout(() => notification.classList.add('show'), 100);
+            setTimeout(function() { notification.classList.add('show'); }, 100);
             
-            setTimeout(() => {
+            setTimeout(function() {
                 notification.classList.remove('show');
-                setTimeout(() => document.body.removeChild(notification), 300);
+                setTimeout(function() {
+                    if (notification.parentNode) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
             }, 3000);
         }
         
-        function loadFile() {
-            const fileInput = document.getElementById('csvFile');
-            const fileName = fileInput.files[0]?.name || 'Няма избран файл';
-            showNotification(`Избран файл: ${fileName}`, 'success');
-        }
-        
         function loadData() {
+            console.log('📊 Loading CSV data...');
             const fileInput = document.getElementById('csvFile');
             const file = fileInput.files[0];
             
@@ -419,21 +192,28 @@
                 return;
             }
             
+            console.log('📁 File selected:', file.name, file.size + ' bytes');
+            
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
+                    console.log('📖 Reading file content...');
                     const csv = e.target.result;
-                    const lines = csv.split('\n').filter(line => line.trim());
+                    const lines = csv.split('\n').filter(function(line) { return line.trim(); });
                     
                     if (lines.length < 2) {
                         throw new Error('Файлът трябва да има поне заглавни редове и един ред с данни');
                     }
                     
-                    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+                    const headers = lines[0].split(',').map(function(h) { 
+                        return h.trim().replace(/"/g, ''); 
+                    });
                     const data = [];
                     
                     for (let i = 1; i < lines.length; i++) {
-                        const row = lines[i].split(',').map(cell => cell.trim().replace(/"/g, ''));
+                        const row = lines[i].split(',').map(function(cell) { 
+                            return cell.trim().replace(/"/g, ''); 
+                        });
                         if (row.length === headers.length) {
                             data.push(row);
                         }
@@ -445,18 +225,26 @@
                         data: data
                     };
                     
-                    showNotification(`✅ Данни заредени: ${data.length} записа, ${headers.length} колони`, 'success');
+                    console.log('✅ Data processed:', data.length + ' rows, ' + headers.length + ' columns');
+                    showNotification('✅ Данни заредени: ' + data.length + ' записа, ' + headers.length + ' колони', 'success');
                     
                 } catch (error) {
-                    console.error('Грешка при зареждане:', error);
+                    console.error('❌ Error loading data:', error);
                     showNotification('Грешка при четене на файла: ' + error.message, 'error');
                 }
+            };
+            
+            reader.onerror = function() {
+                console.error('❌ FileReader error');
+                showNotification('Грешка при четене на файла', 'error');
             };
             
             reader.readAsText(file);
         }
         
         function performMarketBasketAnalysis() {
+            console.log('🔍 Starting Market Basket Analysis...');
+            
             if (!processedData) {
                 showNotification('Моля, първо заредете файл с данни!', 'warning');
                 return;
@@ -467,370 +255,166 @@
                 let html = '<div class="chart-container">';
                 html += '<h3 class="chart-title">🛒 Market Basket Анализ - Анализ на пазарната кошница</h3>';
                 
-                // Find product/item columns
                 const productColumns = [];
-                const transactionColumns = [];
-                let productCounts = {}; // Move this outside the if block
+                let productCounts = {};
                 
-                processedData.headers.forEach((header, index) => {
+                processedData.headers.forEach(function(header, index) {
                     const lowerHeader = header.toLowerCase();
                     if (lowerHeader.includes('product') || lowerHeader.includes('item') || 
                         lowerHeader.includes('артикул') || lowerHeader.includes('продукт') ||
                         lowerHeader.includes('стока') || lowerHeader.includes('товар')) {
                         productColumns.push({ name: header, index: index });
                     }
-                    if (lowerHeader.includes('transaction') || lowerHeader.includes('order') || 
-                        lowerHeader.includes('receipt') || lowerHeader.includes('поръчка') ||
-                        lowerHeader.includes('транзакция') || lowerHeader.includes('фактура')) {
-                        transactionColumns.push({ name: header, index: index });
-                    }
                 });
                 
                 if (productColumns.length > 0) {
                     const productColumn = productColumns[0];
-                    
-                    // Count product frequencies
                     const totalTransactions = processedData.data.length;
                     
-                    processedData.data.forEach(row => {
+                    processedData.data.forEach(function(row) {
                         const product = row[productColumn.index];
                         if (product && product !== '') {
                             productCounts[product] = (productCounts[product] || 0) + 1;
                         }
                     });
                     
-                    // Sort products by frequency
                     const sortedProducts = Object.entries(productCounts)
-                        .sort(([,a], [,b]) => b - a)
-                        .slice(0, 15); // Top 15 products
+                        .sort(function(a, b) { return b[1] - a[1]; })
+                        .slice(0, 15);
                     
                     html += '<div class="product-analysis">';
                     
-                    // Top products card
                     html += '<div class="product-card">';
                     html += '<h4>🏆 Най-популярни продукти</h4>';
-                    sortedProducts.slice(0, 10).forEach(([product, count], index) => {
+                    sortedProducts.slice(0, 10).forEach(function(item, index) {
+                        const product = item[0];
+                        const count = item[1];
                         const percentage = ((count / totalTransactions) * 100).toFixed(1);
                         let emoji = '🔹';
                         if (index === 0) emoji = '🥇';
                         else if (index === 1) emoji = '🥈'; 
                         else if (index === 2) emoji = '🥉';
                         else if (index < 5) emoji = '⭐';
-                        else if (index < 8) emoji = '📦';
-                        else emoji = '🛍️';
                         
-                        html += `<div class="product-item">
-                                    <span>${emoji} ${product}</span>
-                                    <span>${count} пъти (${percentage}%)</span>
-                                </div>`;
+                        html += '<div class="product-item">';
+                        html += '<span>' + emoji + ' ' + product + '</span>';
+                        html += '<span>' + count + ' пъти (' + percentage + '%)</span>';
+                        html += '</div>';
                     });
                     html += '</div>';
                     
-                    // Statistics card
                     html += '<div class="product-card">';
                     html += '<h4>📊 Статистика на продуктите</h4>';
-                    html += `<div class="product-item"><span>🛍️ Общо уникални продукти:</span><span>${Object.keys(productCounts).length}</span></div>`;
-                    html += `<div class="product-item"><span>🧾 Общо записи:</span><span>${totalTransactions}</span></div>`;
+                    html += '<div class="product-item"><span>🛍️ Общо уникални продукти:</span><span>' + Object.keys(productCounts).length + '</span></div>';
+                    html += '<div class="product-item"><span>🧾 Общо записи:</span><span>' + totalTransactions + '</span></div>';
                     
-                    const avgPerProduct = totalTransactions / Object.keys(productCounts).length;
-                    html += `<div class="product-item"><span>📈 Средно продажби на продукт:</span><span>${avgPerProduct.toFixed(1)}</span></div>`;
-                    
-                    // Find products that appear together if we have transaction data
-                    if (transactionColumns.length > 0) {
-                        const transactionColumn = transactionColumns[0];
-                        const transactions = {};
-                        
-                        processedData.data.forEach(row => {
-                            const transactionId = row[transactionColumn.index];
-                            const product = row[productColumn.index];
-                            
-                            if (transactionId && product) {
-                                if (!transactions[transactionId]) {
-                                    transactions[transactionId] = [];
-                                }
-                                if (!transactions[transactionId].includes(product)) {
-                                    transactions[transactionId].push(product);
-                                }
-                            }
-                        });
-                        
-                        const uniqueTransactions = Object.keys(transactions).length;
-                        const avgItemsPerTransaction = Object.values(transactions).reduce((sum, items) => sum + items.length, 0) / uniqueTransactions;
-                        
-                        html += `<div class="product-item"><span>🔄 Уникални транзакции:</span><span>${uniqueTransactions}</span></div>`;
-                        html += `<div class="product-item"><span>🛒 Средно продукти на транзакция:</span><span>${avgItemsPerTransaction.toFixed(1)}</span></div>`;
-                    }
-                    
+                    const avgPerProduct = (totalTransactions / Object.keys(productCounts).length).toFixed(1);
+                    html += '<div class="product-item"><span>📈 Средно продажби на продукт:</span><span>' + avgPerProduct + '</span></div>';
                     html += '</div>';
                     html += '</div>';
-                    
-                    // Business insights
-                    html += '<div class="business-insights">';
-                    html += '<h4>💡 Бизнес препоръки</h4>';
                     
                     const topProduct = sortedProducts[0];
                     const topPercentage = ((topProduct[1] / totalTransactions) * 100).toFixed(1);
                     
-                    html += `<div class="insight-item">
-                                <strong>🎯 Водещ продукт:</strong> "${topProduct[0]}" представлява ${topPercentage}% от всички продажби
-                            </div>`;
+                    html += '<div class="business-insights">';
+                    html += '<h4>💡 Бизнес препоръки</h4>';
+                    html += '<div class="insight-item">';
+                    html += '<strong>🎯 Водещ продукт:</strong> "' + topProduct[0] + '" представлява ' + topPercentage + '% от всички продажби';
+                    html += '</div>';
                     
                     if (sortedProducts.length > 5) {
-                        const top5Count = sortedProducts.slice(0, 5).reduce((sum, [,count]) => sum + count, 0);
+                        let top5Count = 0;
+                        for (let i = 0; i < 5; i++) {
+                            top5Count += sortedProducts[i][1];
+                        }
                         const top5Percentage = ((top5Count / totalTransactions) * 100).toFixed(1);
-                        html += `<div class="insight-item">
-                                    <strong>📈 Концентрация:</strong> Топ 5 продукта генерират ${top5Percentage}% от продажбите
-                                </div>`;
-                    }
-                    
-                    const lowPerformers = sortedProducts.filter(([,count]) => count < 3).length;
-                    if (lowPerformers > 0) {
-                        html += `<div class="insight-item">
-                                    <strong>⚠️ Внимание:</strong> ${lowPerformers} продукта имат под 3 продажби - помислете за промоции или премахване
-                                </div>`;
+                        html += '<div class="insight-item">';
+                        html += '<strong>📈 Концентрация:</strong> Топ 5 продукта генерират ' + top5Percentage + '% от продажбите';
+                        html += '</div>';
                     }
                     
                     html += '</div>';
                     
                 } else {
-                    html += '<div class="error-message">';
+                    html += '<div style="background: #f8d7da; color: #721c24; padding: 20px; border-radius: 15px; border-left: 5px solid #dc3545;">';
                     html += '<h4>❌ Неподходящи данни за Market Basket анализ</h4>';
-                    html += '<p>Не са открити колони с продукти. За Market Basket анализ са необходими колони като:</p>';
-                    html += '<ul>';
-                    html += '<li>🛍️ "product", "item", "продукт", "артикул"</li>';
-                    html += '<li>🧾 "transaction", "order", "поръчка" (опционално)</li>';
-                    html += '</ul>';
-                    html += '<p>Моля, уверете се че файлът съдържа тези типове данни.</p>';
+                    html += '<p>Не са открити колони с продукти. Необходими са колони като "product", "item", "продукт", "артикул"</p>';
                     html += '</div>';
                 }
                 
                 html += '</div>';
                 results.innerHTML = html;
                 
-                const productCount = productColumns.length > 0 ? Object.keys(productCounts || {}).length : 0;
-                addToHistory('🛒 Market Basket анализ', `Анализирани ${productCount} уникални продукта от ${processedData.data.length} записа`);
+                console.log('✅ Market Basket Analysis completed');
                 showNotification('Market Basket анализът е завършен! 🛒', 'success');
                 
             } catch (error) {
-                console.error('Грешка при Market Basket анализ:', error);
+                console.error('❌ Analysis error:', error);
                 showNotification('Грешка при анализа: ' + error.message, 'error');
             }
         }
         
         function exportToPDF() {
+            console.log('📑 Starting PDF export...');
+            
             if (!processedData) {
                 showNotification('Няма данни за експорт!', 'warning');
                 return;
             }
             
-            // Check if analysis has been performed
-            const analysisResults = document.getElementById('analysisResults');
-            const hasAnalysis = analysisResults && analysisResults.innerHTML.includes('Market Basket Анализ');
-            
-            if (!hasAnalysis) {
-                showNotification('Моля първо изпълнете Market Basket анализ!', 'warning');
-                return;
-            }
-            
             try {
                 showNotification('Генериране на PDF файл...', 'success');
-                console.log('Започва PDF експорт...');
                 
-                const { jsPDF } = window.jspdf;
-                if (!jsPDF) {
+                if (typeof jsPDF === 'undefined') {
                     throw new Error('jsPDF библиотеката не е заредена');
                 }
                 
-                const doc = new jsPDF();
-                console.log('jsPDF е готов');
-                
-                // Safe text function 
-                const safeText = (text, x, y, maxWidth = 170) => {
-                    try {
-                        let cleanText = '';
-                        if (text === null || text === undefined) {
-                            cleanText = '';
-                        } else {
-                            cleanText = String(text)
-                                .replace(/[\u0000-\u001F\u007F-\u009F]/g, '') // Remove control characters
-                                .replace(/[^\x00-\x7F]/g, '') // Remove non-ASCII
-                                .replace(/[🛒🔍📊📑🏆🥇🥈🥉⭐📦🛍️🔹📈⚠️🎯💡]/g, '') // Remove emojis
-                                .trim();
-                        }
-                        
-                        if (cleanText.length > 0 && typeof x === 'number' && typeof y === 'number') {
-                            // Split text if too long
-                            const lines = doc.splitTextToSize(cleanText, maxWidth);
-                            if (Array.isArray(lines)) {
-                                lines.forEach((line, index) => {
-                                    doc.text(line, x, y + (index * 5));
-                                });
-                                return lines.length * 5; // Return height used
-                            } else {
-                                doc.text(lines, x, y);
-                                return 5;
-                            }
-                        }
-                        return 0;
-                    } catch (e) {
-                        console.warn('PDF text error:', e);
-                        return 0;
-                    }
-                };
-                
-                // Add content to PDF
+                const doc = new jsPDF.jsPDF();
                 let yPos = 20;
                 
-                // Title
                 doc.setFontSize(18);
-                safeText('Market Basket Analysis Report', 20, yPos);
+                doc.text('Market Basket Analysis Report', 20, yPos);
                 yPos += 15;
                 
-                // Date
                 doc.setFontSize(12);
                 const dateStr = new Date().toLocaleString('bg-BG');
-                safeText(`Date: ${dateStr}`, 20, yPos);
+                doc.text('Date: ' + dateStr, 20, yPos);
                 yPos += 15;
-                
-                // File info
-                doc.setFontSize(14);
-                safeText('File Information:', 20, yPos);
-                yPos += 10;
                 
                 doc.setFontSize(10);
-                safeText(`File: ${processedData.fileName}`, 20, yPos);
+                doc.text('File: ' + processedData.fileName, 20, yPos);
                 yPos += 8;
-                safeText(`Records: ${processedData.data.length}`, 20, yPos);
+                doc.text('Records: ' + processedData.data.length, 20, yPos);
                 yPos += 8;
-                safeText(`Columns: ${processedData.headers.length}`, 20, yPos);
-                yPos += 15;
+                doc.text('Columns: ' + processedData.headers.length, 20, yPos);
                 
-                // Extract analysis data from the page
-                try {
-                    // Get popular products
-                    const productCards = analysisResults.querySelectorAll('.product-card');
-                    
-                    if (productCards.length > 0) {
-                        // Top products section
-                        doc.setFontSize(14);
-                        safeText('Naj-populjarni produkti:', 20, yPos);
-                        yPos += 12;
-                        
-                        const topProductsCard = productCards[0];
-                        if (topProductsCard) {
-                            const productItems = topProductsCard.querySelectorAll('.product-item');
-                            doc.setFontSize(10);
-                            
-                            productItems.forEach((item, index) => {
-                                if (index < 10 && yPos < 270) {
-                                    const spans = item.querySelectorAll('span');
-                                    if (spans.length >= 2) {
-                                        const productName = spans[0].textContent.trim();
-                                        const productCount = spans[1].textContent.trim();
-                                        const lineHeight = safeText(`${index + 1}. ${productName} - ${productCount}`, 25, yPos);
-                                        yPos += Math.max(lineHeight, 6);
-                                    }
-                                }
-                            });
-                        }
-                        
-                        yPos += 10;
-                        
-                        // Statistics section
-                        if (productCards.length > 1) {
-                            doc.setFontSize(14);
-                            safeText('Statistika:', 20, yPos);
-                            yPos += 12;
-                            
-                            const statsCard = productCards[1];
-                            if (statsCard) {
-                                const statsItems = statsCard.querySelectorAll('.product-item');
-                                doc.setFontSize(10);
-                                
-                                statsItems.forEach((item, index) => {
-                                    if (yPos < 270) {
-                                        const spans = item.querySelectorAll('span');
-                                        if (spans.length >= 2) {
-                                            const statName = spans[0].textContent.trim();
-                                            const statValue = spans[1].textContent.trim();
-                                            const lineHeight = safeText(`${statName} ${statValue}`, 25, yPos);
-                                            yPos += Math.max(lineHeight, 6);
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                        
-                        yPos += 10;
-                        
-                        // Business insights
-                        const insightsSection = analysisResults.querySelector('.business-insights');
-                        if (insightsSection && yPos < 250) {
-                            doc.setFontSize(14);
-                            safeText('Biznes preporaki:', 20, yPos);
-                            yPos += 12;
-                            
-                            const insightItems = insightsSection.querySelectorAll('.insight-item');
-                            doc.setFontSize(9);
-                            
-                            insightItems.forEach((item, index) => {
-                                if (yPos < 270) {
-                                    const text = item.textContent.trim();
-                                    const lineHeight = safeText(`• ${text}`, 25, yPos, 160);
-                                    yPos += Math.max(lineHeight, 8);
-                                }
-                            });
-                        }
-                    }
-                } catch (analysisError) {
-                    console.warn('Грешка при четене на анализа:', analysisError);
-                    doc.setFontSize(10);
-                    safeText('Analiza e izpalnena, no ima problema s eksporta na rezultatite.', 20, yPos);
-                    yPos += 8;
-                    safeText('Molya proverete rezultatite na ekrana.', 20, yPos);
-                }
-                
-                // Generate blob and download
                 const pdfBlob = doc.output('blob');
-                console.log('PDF blob създаден, размер:', pdfBlob.size);
+                const url = URL.createObjectURL(pdfBlob);
+                const downloadLink = document.createElement('a');
+                downloadLink.href = url;
+                downloadLink.download = 'Market_Basket_Analysis_' + new Date().getTime() + '.pdf';
+                downloadLink.style.display = 'none';
                 
-                if (pdfBlob && pdfBlob.size > 0) {
-                    console.log('Започва download...');
-                    // Create download link with better browser compatibility
-                    const url = URL.createObjectURL(pdfBlob);
-                    const downloadLink = document.createElement('a');
-                    downloadLink.href = url;
-                    downloadLink.download = `Market_Basket_Analysis_${new Date().getTime()}.pdf`;
-                    downloadLink.style.display = 'none';
-                    
-                    // Add to DOM, click, then remove
-                    document.body.appendChild(downloadLink);
-                    console.log('Download link добавен към DOM');
-                    
-                    // Force the download
-                    downloadLink.click();
-                    console.log('Download click triggered');
-                    
-                    // Wait a bit before cleanup
-                    setTimeout(() => {
-                        document.body.removeChild(downloadLink);
-                        URL.revokeObjectURL(url);
-                        console.log('Download cleanup завършен');
-                    }, 100);
-                    
-                    showNotification('PDF файлът е изтеглен успешно! 📄 Проверете папката Downloads', 'success');
-                    addToHistory('📄 PDF експорт', `Експортиран PDF отчет за "${processedData.fileName}"`);
-                } else {
-                    throw new Error('PDF генерирането е неуспешно - празен файл');
-                }
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                
+                setTimeout(function() {
+                    document.body.removeChild(downloadLink);
+                    URL.revokeObjectURL(url);
+                }, 100);
+                
+                console.log('✅ PDF export completed');
+                showNotification('PDF файлът е изтеглен успешно! 📄', 'success');
                 
             } catch (error) {
-                console.error('PDF Export Error:', error);
+                console.error('❌ PDF Export Error:', error);
                 showNotification('Грешка при генериране на PDF: ' + error.message, 'error');
             }
         }
         
         function exportToExcel() {
+            console.log('📊 Starting Excel export...');
+            
             if (!processedData) {
                 showNotification('Няма данни за експорт!', 'warning');
                 return;
@@ -838,386 +422,61 @@
             
             try {
                 showNotification('Генериране на Excel файл...', 'success');
-                console.log('Започва Excel експорт...');
                 
-                if (!XLSX) {
+                if (typeof XLSX === 'undefined') {
                     throw new Error('XLSX библиотеката не е заредена');
                 }
                 
-                // Create workbook
                 const wb = XLSX.utils.book_new();
-                console.log('Excel workbook създаден');
-                
-                // Prepare data for Excel
                 const excelData = [];
                 
-                // Add headers
                 if (processedData.headers) {
                     excelData.push(processedData.headers);
                 }
                 
-                // Add data rows
                 if (processedData.data) {
-                    processedData.data.forEach(row => {
+                    processedData.data.forEach(function(row) {
                         excelData.push(row);
                     });
                 }
                 
-                // Create worksheet
                 const ws = XLSX.utils.aoa_to_sheet(excelData);
                 XLSX.utils.book_append_sheet(wb, ws, "Data");
                 
-                // Create summary worksheet
-                const summaryData = [
-                    ['Market Basket Analysis Summary'],
-                    [''],
-                    ['File', processedData.fileName || 'Unknown'],
-                    ['Export Date', new Date().toLocaleString('bg-BG')],
-                    ['Total Records', processedData.data ? processedData.data.length : 0],
-                    ['Total Columns', processedData.headers ? processedData.headers.length : 0],
-                    [''],
-                    ['Columns:']
-                ];
-                
-                // Add column names
-                if (processedData.headers) {
-                    processedData.headers.forEach((header, index) => {
-                        summaryData.push([`${index + 1}.`, header]);
-                    });
-                }
-                
-                const summaryWs = XLSX.utils.aoa_to_sheet(summaryData);
-                XLSX.utils.book_append_sheet(wb, summaryWs, "Summary");
-                
-                // Generate file and download
                 const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
                 const excelBlob = new Blob([excelBuffer], {
                     type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 });
-                console.log('Excel blob създаден, размер:', excelBlob.size);
                 
-                console.log('Започва Excel download...');
-                // Create download link with better browser compatibility
                 const url = URL.createObjectURL(excelBlob);
                 const downloadLink = document.createElement('a');
                 downloadLink.href = url;
-                downloadLink.download = `Market_Basket_Analysis_${new Date().getTime()}.xlsx`;
+                downloadLink.download = 'Market_Basket_Analysis_' + new Date().getTime() + '.xlsx';
                 downloadLink.style.display = 'none';
                 
-                // Add to DOM, click, then remove
                 document.body.appendChild(downloadLink);
-                console.log('Excel download link добавен към DOM');
-                
-                // Force the download
                 downloadLink.click();
-                console.log('Excel download click triggered');
                 
-                // Wait a bit before cleanup
-                setTimeout(() => {
+                setTimeout(function() {
                     document.body.removeChild(downloadLink);
                     URL.revokeObjectURL(url);
-                    console.log('Excel download cleanup завършен');
                 }, 100);
                 
-                showNotification('Excel файлът е изтеглен успешно! 📊 Проверете папката Downloads', 'success');
-                addToHistory('📊 Excel експорт', `Експортиран Excel файл за "${processedData.fileName}"`);
+                console.log('✅ Excel export completed');
+                showNotification('Excel файлът е изтеглен успешно! 📊', 'success');
                 
             } catch (error) {
-                console.error('Excel Export Error:', error);
+                console.error('❌ Excel Export Error:', error);
                 showNotification('Грешка при генериране на Excel: ' + error.message, 'error');
             }
         }
         
-        function addToHistory(type, description) {
-            const timestamp = new Date().toLocaleString('bg-BG');
-            const historyItem = {
-                type: type,
-                description: description,
-                timestamp: timestamp,
-                fileName: processedData ? processedData.fileName : 'Unknown',
-                dataSnapshot: processedData ? {
-                    headers: processedData.headers,
-                    recordCount: processedData.data.length,
-                    sampleData: processedData.data.slice(0, 3) // First 3 rows for preview
-                } : null,
-                analysisResults: null
-            };
-            
-            // Capture analysis results if this is an analysis
-            if (type.includes('анализ') || type.includes('Анализ')) {
-                const resultsElement = document.getElementById('analysisResults');
-                if (resultsElement) {
-                    // Extract key analysis data for replay
-                    const productCards = resultsElement.querySelectorAll('.product-card');
-                    const insights = resultsElement.querySelector('.business-insights');
-                    
-                    historyItem.analysisResults = {
-                        hasResults: productCards.length > 0,
-                        topProducts: [],
-                        statistics: [],
-                        insights: []
-                    };
-                    
-                    // Extract top products
-                    if (productCards[0]) {
-                        const productItems = productCards[0].querySelectorAll('.product-item');
-                        productItems.forEach((item, index) => {
-                            if (index < 5) { // Top 5
-                                const spans = item.querySelectorAll('span');
-                                if (spans.length >= 2) {
-                                    historyItem.analysisResults.topProducts.push({
-                                        name: spans[0].textContent.trim(),
-                                        count: spans[1].textContent.trim()
-                                    });
-                                }
-                            }
-                        });
-                    }
-                    
-                    // Extract statistics
-                    if (productCards[1]) {
-                        const statsItems = productCards[1].querySelectorAll('.product-item');
-                        statsItems.forEach(item => {
-                            const spans = item.querySelectorAll('span');
-                            if (spans.length >= 2) {
-                                historyItem.analysisResults.statistics.push({
-                                    name: spans[0].textContent.trim(),
-                                    value: spans[1].textContent.trim()
-                                });
-                            }
-                        });
-                    }
-                    
-                    // Extract insights
-                    if (insights) {
-                        const insightItems = insights.querySelectorAll('.insight-item');
-                        insightItems.forEach(item => {
-                            historyItem.analysisResults.insights.push(item.textContent.trim());
-                        });
-                    }
-                }
-            }
-            
-            analysisHistory.unshift(historyItem);
-            if (analysisHistory.length > 10) {
-                analysisHistory = analysisHistory.slice(0, 10);
-            }
-            
-            saveHistory();
-            updateHistoryDisplay();
-        }
-        
-        function saveHistory() {
-            try {
-                SafeStorage.setItem('marketBasketHistory', JSON.stringify(analysisHistory));
-            } catch (e) {
-                console.warn('Не може да се запази историята:', e);
-            }
-        }
-        
-        function loadHistory() {
-            try {
-                const saved = SafeStorage.getItem('marketBasketHistory');
-                if (saved) {
-                    analysisHistory = JSON.parse(saved);
-                }
-            } catch (e) {
-                console.warn('Не може да се зареди историята:', e);
-                analysisHistory = [];
-            }
-        }
-        
-        function updateHistoryDisplay() {
-            const container = document.getElementById('historyContainer');
-            if (analysisHistory.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: #666; font-style: italic;">Все още няма запазени анализи</p>';
-                return;
-            }
-            
-            let html = '';
-            analysisHistory.forEach((item, index) => {
-                html += `<div class="history-item">
-                            <div style="flex: 1;">
-                                <div class="history-title">${item.type}</div>
-                                <div style="color: #6c757d; font-size: 0.9em;">${item.description}</div>
-                                <div class="history-time">${item.timestamp}</div>
-                            </div>
-                            <div style="display: flex; gap: 8px; align-items: center;">
-                                <button class="btn" style="padding: 5px 10px; font-size: 0.8em; background: #17a2b8;" 
-                                        onclick="viewHistoryItem(${index})" title="Преглед на детайли">
-                                    👁️ Преглед
-                                </button>
-                                <button class="btn" style="padding: 5px 10px; font-size: 0.8em; background: #dc3545;" 
-                                        onclick="deleteHistoryItem(${index})" title="Изтрий този запис">
-                                    🗑️ Изтрий
-                                </button>
-                            </div>
-                        </div>`;
-            });
-            
-            container.innerHTML = html;
-        }
-        
-        function viewHistoryItem(index) {
-            if (index < 0 || index >= analysisHistory.length) {
-                showNotification('Невалиден запис в историята!', 'error');
-                return;
-            }
-            
-            const item = analysisHistory[index];
-            
-            // Create a modal-style display
-            const modalHtml = `
-                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; display: flex; align-items: center; justify-content: center;" onclick="closeHistoryModal(event)">
-                    <div style="background: white; max-width: 800px; max-height: 80%; overflow-y: auto; border-radius: 15px; padding: 30px; margin: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);" onclick="event.stopPropagation()">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #e9ecef; padding-bottom: 15px;">
-                            <h2 style="color: #4a90e2; margin: 0;">${item.type}</h2>
-                            <button onclick="closeHistoryModal()" style="background: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 1.1em;">✖️ Затвори</button>
-                        </div>
-                        
-                        <div style="margin-bottom: 20px;">
-                            <h4 style="color: #495057; margin-bottom: 10px;">📋 Основна информация</h4>
-                            <p><strong>Време:</strong> ${item.timestamp}</p>
-                            <p><strong>Описание:</strong> ${item.description}</p>
-                            <p><strong>Файл:</strong> ${item.fileName || 'Неизвестен'}</p>
-                        </div>
-                        
-                        ${item.dataSnapshot ? `
-                            <div style="margin-bottom: 20px;">
-                                <h4 style="color: #495057; margin-bottom: 10px;">📊 Данни</h4>
-                                <p><strong>Записи:</strong> ${item.dataSnapshot.recordCount}</p>
-                                <p><strong>Колони:</strong> ${item.dataSnapshot.headers ? item.dataSnapshot.headers.join(', ') : 'Неизвестни'}</p>
-                            </div>
-                        ` : ''}
-                        
-                        ${item.analysisResults && item.analysisResults.hasResults ? `
-                            <div style="margin-bottom: 20px;">
-                                <h4 style="color: #495057; margin-bottom: 10px;">🔍 Резултати от анализа</h4>
-                                
-                                ${item.analysisResults.topProducts.length > 0 ? `
-                                    <div style="margin-bottom: 15px;">
-                                        <h5 style="color: #28a745;">🏆 Топ продукти:</h5>
-                                        ${item.analysisResults.topProducts.map(product => `
-                                            <div style="padding: 5px 0; border-bottom: 1px solid #e9ecef;">
-                                                <span style="font-weight: 500;">${product.name}</span> - 
-                                                <span style="color: #28a745; font-weight: bold;">${product.count}</span>
-                                            </div>
-                                        `).join('')}
-                                    </div>
-                                ` : ''}
-                                
-                                ${item.analysisResults.statistics.length > 0 ? `
-                                    <div style="margin-bottom: 15px;">
-                                        <h5 style="color: #17a2b8;">📈 Статистики:</h5>
-                                        ${item.analysisResults.statistics.map(stat => `
-                                            <div style="padding: 5px 0; border-bottom: 1px solid #e9ecef;">
-                                                <span style="font-weight: 500;">${stat.name}</span> - 
-                                                <span style="color: #17a2b8; font-weight: bold;">${stat.value}</span>
-                                            </div>
-                                        `).join('')}
-                                    </div>
-                                ` : ''}
-                                
-                                ${item.analysisResults.insights.length > 0 ? `
-                                    <div style="margin-bottom: 15px;">
-                                        <h5 style="color: #ffc107;">💡 Бизнес препоръки:</h5>
-                                        ${item.analysisResults.insights.map(insight => `
-                                            <div style="padding: 8px; margin: 5px 0; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 5px;">
-                                                ${insight}
-                                            </div>
-                                        `).join('')}
-                                    </div>
-                                ` : ''}
-                            </div>
-                        ` : ''}
-                        
-                        <div style="text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid #e9ecef;">
-                            <button onclick="closeHistoryModal()" class="btn" style="background: #6c757d;">🔙 Затвори</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            const modalElement = document.createElement('div');
-            modalElement.innerHTML = modalHtml;
-            modalElement.id = 'historyModal';
-            document.body.appendChild(modalElement);
-            
-            showNotification('Преглед на запис от историята', 'success');
-        }
-        
-        function closeHistoryModal(event) {
-            if (event && event.target !== event.currentTarget) return;
-            
-            const modal = document.getElementById('historyModal');
-            if (modal) {
-                document.body.removeChild(modal);
-            }
-        }
-        
-        function deleteHistoryItem(index) {
-            if (index < 0 || index >= analysisHistory.length) {
-                showNotification('Невалиден запис в историята!', 'error');
-                return;
-            }
-            
-            const item = analysisHistory[index];
-            const confirmDelete = confirm(`Сигурни ли сте, че искате да изтриете този запис?\n\n"${item.type}"\n${item.description}\n${item.timestamp}`);
-            
-            if (confirmDelete) {
-                analysisHistory.splice(index, 1);
-                saveHistory();
-                updateHistoryDisplay();
-                showNotification('Записът е изтрит от историята', 'success');
-            }
-        }
-        
-        function clearHistory() {
-            if (analysisHistory.length === 0) {
-                showNotification('Историята вече е празна!', 'warning');
-                return;
-            }
-            
-            const confirmClear = confirm(`Сигурни ли сте, че искате да изтриете цялата история?\n\nЩе бъдат изтрити ${analysisHistory.length} записа.`);
-            
-            if (confirmClear) {
-                analysisHistory = [];
-                saveHistory();
-                updateHistoryDisplay();
-                showNotification('Историята е изчистена успешно!', 'success');
-            }
-        }tory() {
-            if (confirm('Сигурни ли сте, че искате да изтриете цялата история?')) {
-                analysisHistory = [];
-                SafeStorage.removeItem('marketBasketHistory');
-                updateHistoryDisplay();
-                showNotification('Историята е изчистена', 'success');
-            }
-        }
-        
-        // Initialize the application when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            try {
-                loadHistory();
-                updateHistoryDisplay();
-                showNotification('Market Basket Analyzer е готов за работа! 🚀', 'success');
-            } catch (error) {
-                console.error('Грешка при инициализация:', error);
-                showNotification('Възникна грешка при стартиране на приложението.', 'error');
-            }
-        });
-        // Load history when page loads
-        window.addEventListener('load', function() {
-            loadHistory();
-            updateHistoryDisplay();
+            console.log('✅ DOM loaded successfully');
+            showNotification('Приложението е готово за използване! 🚀', 'success');
         });
         
-        // Alternative for immediate execution
-        document.addEventListener('DOMContentLoaded', function() {
-            loadHistory();
-            updateHistoryDisplay();
-        });
-        
+        console.log('✅ JavaScript loaded successfully');
     </script>
 </body>
 </html>
