@@ -271,11 +271,16 @@
         }
         
         .history-item {
-            padding: 10px;
+            padding: 15px;
             border-bottom: 1px solid #e9ecef;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: background-color 0.3s ease;
+        }
+        
+        .history-item:hover {
+            background-color: #f8f9fa;
         }
         
         .history-item:last-child {
@@ -285,11 +290,14 @@
         .history-title {
             font-weight: bold;
             color: #495057;
+            font-size: 1.1em;
+            margin-bottom: 5px;
         }
         
         .history-time {
             font-size: 0.8em;
             color: #6c757d;
+            margin-top: 5px;
         }
     </style>
 </head>
@@ -615,6 +623,15 @@
                 return;
             }
             
+            // Check if analysis has been performed
+            const analysisResults = document.getElementById('analysisResults');
+            const hasAnalysis = analysisResults && analysisResults.innerHTML.includes('Market Basket Анализ');
+            
+            if (!hasAnalysis) {
+                showNotification('Моля първо изпълнете Market Basket анализ!', 'warning');
+                return;
+            }
+            
             try {
                 showNotification('Генериране на PDF файл...', 'success');
                 console.log('Започва PDF експорт...');
@@ -628,7 +645,7 @@
                 console.log('jsPDF е готов');
                 
                 // Safe text function 
-                const safeText = (text, x, y) => {
+                const safeText = (text, x, y, maxWidth = 170) => {
                     try {
                         let cleanText = '';
                         if (text === null || text === undefined) {
@@ -636,18 +653,28 @@
                         } else {
                             cleanText = String(text)
                                 .replace(/[\u0000-\u001F\u007F-\u009F]/g, '') // Remove control characters
-                                .replace(/[^\x00-\x7F]/g, '?') // Replace non-ASCII with ?
+                                .replace(/[^\x00-\x7F]/g, '') // Remove non-ASCII
+                                .replace(/[🛒🔍📊📑🏆🥇🥈🥉⭐📦🛍️🔹📈⚠️🎯💡]/g, '') // Remove emojis
                                 .trim();
                         }
                         
                         if (cleanText.length > 0 && typeof x === 'number' && typeof y === 'number') {
-                            doc.text(cleanText, x, y);
-                            return true;
+                            // Split text if too long
+                            const lines = doc.splitTextToSize(cleanText, maxWidth);
+                            if (Array.isArray(lines)) {
+                                lines.forEach((line, index) => {
+                                    doc.text(line, x, y + (index * 5));
+                                });
+                                return lines.length * 5; // Return height used
+                            } else {
+                                doc.text(lines, x, y);
+                                return 5;
+                            }
                         }
-                        return false;
+                        return 0;
                     } catch (e) {
                         console.warn('PDF text error:', e);
-                        return false;
+                        return 0;
                     }
                 };
                 
@@ -678,21 +705,89 @@
                 safeText(`Columns: ${processedData.headers.length}`, 20, yPos);
                 yPos += 15;
                 
-                // Headers
-                if (processedData.headers && processedData.headers.length > 0) {
-                    doc.setFontSize(12);
-                    safeText('Data Columns:', 20, yPos);
-                    yPos += 8;
+                // Extract analysis data from the page
+                try {
+                    // Get popular products
+                    const productCards = analysisResults.querySelectorAll('.product-card');
                     
-                    doc.setFontSize(9);
-                    const headersList = processedData.headers.slice(0, 10).join(', ');
-                    safeText(headersList, 20, yPos);
-                    yPos += 10;
-                    
-                    if (processedData.headers.length > 10) {
-                        safeText(`... and ${processedData.headers.length - 10} more columns`, 20, yPos);
+                    if (productCards.length > 0) {
+                        // Top products section
+                        doc.setFontSize(14);
+                        safeText('Naj-populjarni produkti:', 20, yPos);
+                        yPos += 12;
+                        
+                        const topProductsCard = productCards[0];
+                        if (topProductsCard) {
+                            const productItems = topProductsCard.querySelectorAll('.product-item');
+                            doc.setFontSize(10);
+                            
+                            productItems.forEach((item, index) => {
+                                if (index < 10 && yPos < 270) {
+                                    const spans = item.querySelectorAll('span');
+                                    if (spans.length >= 2) {
+                                        const productName = spans[0].textContent.trim();
+                                        const productCount = spans[1].textContent.trim();
+                                        const lineHeight = safeText(`${index + 1}. ${productName} - ${productCount}`, 25, yPos);
+                                        yPos += Math.max(lineHeight, 6);
+                                    }
+                                }
+                            });
+                        }
+                        
                         yPos += 10;
+                        
+                        // Statistics section
+                        if (productCards.length > 1) {
+                            doc.setFontSize(14);
+                            safeText('Statistika:', 20, yPos);
+                            yPos += 12;
+                            
+                            const statsCard = productCards[1];
+                            if (statsCard) {
+                                const statsItems = statsCard.querySelectorAll('.product-item');
+                                doc.setFontSize(10);
+                                
+                                statsItems.forEach((item, index) => {
+                                    if (yPos < 270) {
+                                        const spans = item.querySelectorAll('span');
+                                        if (spans.length >= 2) {
+                                            const statName = spans[0].textContent.trim();
+                                            const statValue = spans[1].textContent.trim();
+                                            const lineHeight = safeText(`${statName} ${statValue}`, 25, yPos);
+                                            yPos += Math.max(lineHeight, 6);
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                        
+                        yPos += 10;
+                        
+                        // Business insights
+                        const insightsSection = analysisResults.querySelector('.business-insights');
+                        if (insightsSection && yPos < 250) {
+                            doc.setFontSize(14);
+                            safeText('Biznes preporaki:', 20, yPos);
+                            yPos += 12;
+                            
+                            const insightItems = insightsSection.querySelectorAll('.insight-item');
+                            doc.setFontSize(9);
+                            
+                            insightItems.forEach((item, index) => {
+                                if (yPos < 270) {
+                                    const text = item.textContent.trim();
+                                    const lineHeight = safeText(`• ${text}`, 25, yPos, 160);
+                                    yPos += Math.max(lineHeight, 8);
+                                }
+                            });
+                        }
                     }
+                } catch (analysisError) {
+                    console.warn('Грешка при четене на анализа:', analysisError);
+                    doc.setFontSize(10);
+                    safeText('Analiza e izpalnena, no ima problema s eksporta na rezultatite.', 20, yPos);
+                    yPos += 8;
+                    safeText('Molya proverete rezultatite na ekrana.', 20, yPos);
                 }
                 
                 // Generate blob and download
@@ -838,8 +933,70 @@
             const historyItem = {
                 type: type,
                 description: description,
-                timestamp: timestamp
+                timestamp: timestamp,
+                fileName: processedData ? processedData.fileName : 'Unknown',
+                dataSnapshot: processedData ? {
+                    headers: processedData.headers,
+                    recordCount: processedData.data.length,
+                    sampleData: processedData.data.slice(0, 3) // First 3 rows for preview
+                } : null,
+                analysisResults: null
             };
+            
+            // Capture analysis results if this is an analysis
+            if (type.includes('анализ') || type.includes('Анализ')) {
+                const resultsElement = document.getElementById('analysisResults');
+                if (resultsElement) {
+                    // Extract key analysis data for replay
+                    const productCards = resultsElement.querySelectorAll('.product-card');
+                    const insights = resultsElement.querySelector('.business-insights');
+                    
+                    historyItem.analysisResults = {
+                        hasResults: productCards.length > 0,
+                        topProducts: [],
+                        statistics: [],
+                        insights: []
+                    };
+                    
+                    // Extract top products
+                    if (productCards[0]) {
+                        const productItems = productCards[0].querySelectorAll('.product-item');
+                        productItems.forEach((item, index) => {
+                            if (index < 5) { // Top 5
+                                const spans = item.querySelectorAll('span');
+                                if (spans.length >= 2) {
+                                    historyItem.analysisResults.topProducts.push({
+                                        name: spans[0].textContent.trim(),
+                                        count: spans[1].textContent.trim()
+                                    });
+                                }
+                            }
+                        });
+                    }
+                    
+                    // Extract statistics
+                    if (productCards[1]) {
+                        const statsItems = productCards[1].querySelectorAll('.product-item');
+                        statsItems.forEach(item => {
+                            const spans = item.querySelectorAll('span');
+                            if (spans.length >= 2) {
+                                historyItem.analysisResults.statistics.push({
+                                    name: spans[0].textContent.trim(),
+                                    value: spans[1].textContent.trim()
+                                });
+                            }
+                        });
+                    }
+                    
+                    // Extract insights
+                    if (insights) {
+                        const insightItems = insights.querySelectorAll('.insight-item');
+                        insightItems.forEach(item => {
+                            historyItem.analysisResults.insights.push(item.textContent.trim());
+                        });
+                    }
+                }
+            }
             
             analysisHistory.unshift(historyItem);
             if (analysisHistory.length > 10) {
@@ -878,20 +1035,158 @@
             }
             
             let html = '';
-            analysisHistory.forEach(item => {
+            analysisHistory.forEach((item, index) => {
                 html += `<div class="history-item">
-                            <div>
+                            <div style="flex: 1;">
                                 <div class="history-title">${item.type}</div>
                                 <div style="color: #6c757d; font-size: 0.9em;">${item.description}</div>
+                                <div class="history-time">${item.timestamp}</div>
                             </div>
-                            <div class="history-time">${item.timestamp}</div>
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <button class="btn" style="padding: 5px 10px; font-size: 0.8em; background: #17a2b8;" 
+                                        onclick="viewHistoryItem(${index})" title="Преглед на детайли">
+                                    👁️ Преглед
+                                </button>
+                                <button class="btn" style="padding: 5px 10px; font-size: 0.8em; background: #dc3545;" 
+                                        onclick="deleteHistoryItem(${index})" title="Изтрий този запис">
+                                    🗑️ Изтрий
+                                </button>
+                            </div>
                         </div>`;
             });
             
             container.innerHTML = html;
         }
         
+        function viewHistoryItem(index) {
+            if (index < 0 || index >= analysisHistory.length) {
+                showNotification('Невалиден запис в историята!', 'error');
+                return;
+            }
+            
+            const item = analysisHistory[index];
+            
+            // Create a modal-style display
+            const modalHtml = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; display: flex; align-items: center; justify-content: center;" onclick="closeHistoryModal(event)">
+                    <div style="background: white; max-width: 800px; max-height: 80%; overflow-y: auto; border-radius: 15px; padding: 30px; margin: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);" onclick="event.stopPropagation()">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #e9ecef; padding-bottom: 15px;">
+                            <h2 style="color: #4a90e2; margin: 0;">${item.type}</h2>
+                            <button onclick="closeHistoryModal()" style="background: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 1.1em;">✖️ Затвори</button>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <h4 style="color: #495057; margin-bottom: 10px;">📋 Основна информация</h4>
+                            <p><strong>Време:</strong> ${item.timestamp}</p>
+                            <p><strong>Описание:</strong> ${item.description}</p>
+                            <p><strong>Файл:</strong> ${item.fileName || 'Неизвестен'}</p>
+                        </div>
+                        
+                        ${item.dataSnapshot ? `
+                            <div style="margin-bottom: 20px;">
+                                <h4 style="color: #495057; margin-bottom: 10px;">📊 Данни</h4>
+                                <p><strong>Записи:</strong> ${item.dataSnapshot.recordCount}</p>
+                                <p><strong>Колони:</strong> ${item.dataSnapshot.headers ? item.dataSnapshot.headers.join(', ') : 'Неизвестни'}</p>
+                            </div>
+                        ` : ''}
+                        
+                        ${item.analysisResults && item.analysisResults.hasResults ? `
+                            <div style="margin-bottom: 20px;">
+                                <h4 style="color: #495057; margin-bottom: 10px;">🔍 Резултати от анализа</h4>
+                                
+                                ${item.analysisResults.topProducts.length > 0 ? `
+                                    <div style="margin-bottom: 15px;">
+                                        <h5 style="color: #28a745;">🏆 Топ продукти:</h5>
+                                        ${item.analysisResults.topProducts.map(product => `
+                                            <div style="padding: 5px 0; border-bottom: 1px solid #e9ecef;">
+                                                <span style="font-weight: 500;">${product.name}</span> - 
+                                                <span style="color: #28a745; font-weight: bold;">${product.count}</span>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                ` : ''}
+                                
+                                ${item.analysisResults.statistics.length > 0 ? `
+                                    <div style="margin-bottom: 15px;">
+                                        <h5 style="color: #17a2b8;">📈 Статистики:</h5>
+                                        ${item.analysisResults.statistics.map(stat => `
+                                            <div style="padding: 5px 0; border-bottom: 1px solid #e9ecef;">
+                                                <span style="font-weight: 500;">${stat.name}</span> - 
+                                                <span style="color: #17a2b8; font-weight: bold;">${stat.value}</span>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                ` : ''}
+                                
+                                ${item.analysisResults.insights.length > 0 ? `
+                                    <div style="margin-bottom: 15px;">
+                                        <h5 style="color: #ffc107;">💡 Бизнес препоръки:</h5>
+                                        ${item.analysisResults.insights.map(insight => `
+                                            <div style="padding: 8px; margin: 5px 0; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 5px;">
+                                                ${insight}
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        ` : ''}
+                        
+                        <div style="text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid #e9ecef;">
+                            <button onclick="closeHistoryModal()" class="btn" style="background: #6c757d;">🔙 Затвори</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            const modalElement = document.createElement('div');
+            modalElement.innerHTML = modalHtml;
+            modalElement.id = 'historyModal';
+            document.body.appendChild(modalElement);
+            
+            showNotification('Преглед на запис от историята', 'success');
+        }
+        
+        function closeHistoryModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            
+            const modal = document.getElementById('historyModal');
+            if (modal) {
+                document.body.removeChild(modal);
+            }
+        }
+        
+        function deleteHistoryItem(index) {
+            if (index < 0 || index >= analysisHistory.length) {
+                showNotification('Невалиден запис в историята!', 'error');
+                return;
+            }
+            
+            const item = analysisHistory[index];
+            const confirmDelete = confirm(`Сигурни ли сте, че искате да изтриете този запис?\n\n"${item.type}"\n${item.description}\n${item.timestamp}`);
+            
+            if (confirmDelete) {
+                analysisHistory.splice(index, 1);
+                saveHistory();
+                updateHistoryDisplay();
+                showNotification('Записът е изтрит от историята', 'success');
+            }
+        }
+        
         function clearHistory() {
+            if (analysisHistory.length === 0) {
+                showNotification('Историята вече е празна!', 'warning');
+                return;
+            }
+            
+            const confirmClear = confirm(`Сигурни ли сте, че искате да изтриете цялата история?\n\nЩе бъдат изтрити ${analysisHistory.length} записа.`);
+            
+            if (confirmClear) {
+                analysisHistory = [];
+                saveHistory();
+                updateHistoryDisplay();
+                showNotification('Историята е изчистена успешно!', 'success');
+            }
+        }tory() {
             if (confirm('Сигурни ли сте, че искате да изтриете цялата история?')) {
                 analysisHistory = [];
                 SafeStorage.removeItem('marketBasketHistory');
@@ -911,6 +1206,18 @@
                 showNotification('Възникна грешка при стартиране на приложението.', 'error');
             }
         });
+        // Load history when page loads
+        window.addEventListener('load', function() {
+            loadHistory();
+            updateHistoryDisplay();
+        });
+        
+        // Alternative for immediate execution
+        document.addEventListener('DOMContentLoaded', function() {
+            loadHistory();
+            updateHistoryDisplay();
+        });
+        
     </script>
 </body>
 </html>
