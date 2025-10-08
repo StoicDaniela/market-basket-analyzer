@@ -1,0 +1,340 @@
+[
+  {
+    "query": "A simple, clean icon of cheese with white background for product visualization",
+    "image_info": {
+      "url": "https://media.istockphoto.com/id/685689158/vector/french-cheese-icon-flat-style.jpg?s=612x612&w=0&k=20&c=TIh57ju4f0UmpnboLk6sM6f0O4Vtl2O71mXjDd9ZAQo=",
+      "file_path": "/workspace/imgs/simple_cheese_wedge_icon_white_background.png",
+      "img_format": "JPEG",
+      "mode": "RGB",
+      "file_size": 9880,
+      "width": 612,
+      "height": 612,
+      "total_pixels": 374544,
+      "basic_score": 0.8088125470533797
+    },
+    "llm_score": {
+      "success": true,
+      "relevance_score": 100.0,
+      "clarity_score": 100.0,
+      "watermark_score": 100.0,
+      "overall_score": 100.0,
+      "explanation": "The image is an exact match for both the search query and prompt. It is a simple, clean cheese icon with a white background, rendered in a crisp vector-style. There are no watermarks, and its clarity is excellent, making it perfectly suitable for product visualization.",
+      "file_name": "simple_cheese_wedge_icon_white_background.png",
+      "caption": "A minimalist and clean icon depicting a triangular wedge of bright yellow cheese with various-sized round holes, presented on a solid white background. The design features flat colors and crisp edges, making it ideal for digital interfaces, product visualization, or graphic design.",
+      "recommend": true,
+      "error": ""
+    }
+  },
+  {
+    "query": "A simple, clean icon of cheese with white background for product visualization",
+    "image_info": {
+      "url": "https://static.vecteezy.com/system/resources/previews/016/085/504/non_2x/outline-simple-cheese-icon-isolated-on-white-background-vector.jpg",
+      "file_path": "/workspace/imgs/simple_clean_cheese_icon_white_background.jpg",
+      "img_format": "JPEG",
+      "mode": "L",
+      "file_size": 33942,
+      "width": 980,
+      "height": 980,
+      "total_pixels": 960400,
+      "basic_score": 0.9195848624739213
+    },
+    "llm_score": {
+      "success": true,
+      "relevance_score": 100.0,
+      "clarity_score": 100.0,
+      "watermark_score": 100.0,
+      "overall_score": 100.0,
+      "explanation": "The image perfectly matches the search query and prompt. It is a simple, clean outline icon of a cheese wheel with a wedge removed, clearly displaying holes, all set against a pristine white background. The clarity is excellent, and there are no watermarks.",
+      "file_name": "simple_clean_cheese_icon_white_background.jpg",
+      "caption": "A minimalist black outline icon illustrating a round cheese wheel with a triangular wedge cut out, revealing the characteristic holes within. The design is simple, clean, and presented on a pure white background, making it ideal for product visualization and graphic design applications.",
+      "recommend": true,
+      "error": ""
+    }
+  },
+  {
+    "query": "A simple, clean icon of milk bottle with white background for product visualization",
+    "image_info": {
+      "url": "https://static.vecteezy.com/system/resources/previews/041/935/267/non_2x/milk-can-icon-design-template-simple-and-clean-free-vector.jpg",
+      "file_path": "/workspace/imgs/milk_bottle_can_outline_icon_white_background.jpg",
+      "img_format": "JPEG",
+      "mode": "L",
+      "file_size": 21211,
+      "width": 980,
+      "height": 980,
+      "total_pixels": 960400,
+      "basic_score": 0.918248225617376
+    },
+    "llm_score": {
+      "success": true,
+      "relevance_score": 95.0,
+      "clarity_score": 100.0,
+      "watermark_score": 100.0,
+      "overall_score": 98.0,
+      "explanation": "The image is highly relevant to the search query and prompt, featuring a simple, clean outline icon of a milk bottle alongside a milk can, presented on a pure white background. The clarity is excellent with crisp lines, and there are no watermarks. Its minimalist design makes it perfect for product visualization or as a general dairy icon.",
+      "file_name": "milk_bottle_can_outline_icon_white_background.jpg",
+      "caption": "A simple and clean outline icon depicting a traditional milk can next to a smaller milk bottle, both filled with liquid, set against a pristine white background. The minimalist black line art style emphasizes clarity and versatility for various design applications, including product visualization and digital interfaces.",
+      "recommend": true,
+      "error": ""
+    }
+  },
+  {
+    "query": "A simple, clean icon of milk bottle with white background for product visualization",
+    "image_info": {
+      "url": "https://static.vecteezy.com/system/resources/previews/020/715/135/non_2x/fresh-un-pasteurized-cow-milk-bottle-icon-milk-bottle-simple-icon-vector.jpg",
+      "file_path": "/workspace/imgs/simple_milk_bottle_icon_white_background.png",
+      "img_format": "JPEG",
+      "mode": "L",
+      "file_size": 14998,
+      "width": 980,
+      "height": 980,
+      "total_pixels": 960400,
+      "basic_score": 0.9175914092204972
+    },
+    "llm_score": {
+      "success": true,
+      "relevance_score": 95.0,
+      "clarity_score": 100.0,
+      "watermark_score": 100.0,
+      "overall_score": 98.0,
+      "explanation": "The image perfectly matches the 'simple, clean icon of milk bottle with white background' criteria. It features crisp, clear lines and no watermarks, making it ideal for product visualization.",
+      "file_name": "simple_milk_bottle_icon_white_background.png",
+      "caption": "A minimalist black outline icon depicting a generic bottle, suitable for representing a milk bottle, set against a pristine white background. The clean, vector-like design makes it an excellent choice for product visualization, web icons, or infographic elements requiring a simple and clear representation.",
+      "recommend": true,
+      "error": ""
+    }
+  },
+  {
+    "query": "A simple, clean icon of coffee cup with white background for product visualization",
+    "image_info": {
+      "url": "https://static.vecteezy.com/system/resources/previews/011/614/415/non_2x/coffee-cup-icon-with-hot-water-on-white-background-simple-line-silhouette-and-clean-style-black-and-white-suitable-for-symbol-sign-icon-or-logo-free-vector.jpg",
+      "file_path": "/workspace/imgs/simple_coffee_cup_icon_white_background.png",
+      "img_format": "JPEG",
+      "mode": "L",
+      "file_size": 21451,
+      "width": 980,
+      "height": 980,
+      "total_pixels": 960400,
+      "basic_score": 0.9182735388790052
+    },
+    "llm_score": {
+      "success": true,
+      "relevance_score": 100.0,
+      "clarity_score": 100.0,
+      "watermark_score": 100.0,
+      "overall_score": 95.0,
+      "explanation": "The image perfectly matches the search query and prompt. It is a simple, clean line art icon of a coffee cup with steam on a pure white background, ideal for product visualization. The clarity is excellent, and there are no watermarks.",
+      "file_name": "simple_coffee_cup_icon_white_background.png",
+      "caption": "A minimalist black line art icon depicting a hot coffee cup with steam rising, set against a pristine white background. The design is simple and clean, suitable for web graphics, applications, or product visualization.",
+      "recommend": true,
+      "error": ""
+    }
+  },
+  {
+    "query": "A simple, clean icon of coffee cup with white background for product visualization",
+    "image_info": {
+      "url": "https://static.vecteezy.com/system/resources/previews/011/420/457/non_2x/cup-icon-with-cold-water-on-white-background-simple-line-silhouette-and-clean-style-black-and-white-suitable-for-symbol-sign-icon-or-logo-free-vector.jpg",
+      "file_path": "/workspace/imgs/simple_clean_coffee_cup_icon_white_background.png",
+      "img_format": "JPEG",
+      "mode": "L",
+      "file_size": 16793,
+      "width": 980,
+      "height": 980,
+      "total_pixels": 960400,
+      "basic_score": 0.9177814695735538
+    },
+    "llm_score": {
+      "success": true,
+      "relevance_score": 98.0,
+      "clarity_score": 100.0,
+      "watermark_score": 100.0,
+      "overall_score": 95.0,
+      "explanation": "The image is a perfect match for a 'simple, clean coffee cup icon with a white background.' The design is minimalistic, highly clear, and entirely free of watermarks, making it ideal for product visualization. The small sparkle elements within the cup add to the 'clean' aesthetic without compromising simplicity.",
+      "file_name": "simple_clean_coffee_cup_icon_white_background.png",
+      "caption": "A minimalist, black outline icon of a clean coffee cup with small sparkle graphics inside, set against a pristine white background. The design is simple and clear, suitable for digital interfaces and product visualizations.",
+      "recommend": true,
+      "error": ""
+    }
+  },
+  {
+    "query": "A simple, clean icon of coffee cup with white background for product visualization",
+    "image_info": {
+      "url": "https://static.vecteezy.com/system/resources/previews/011/614/421/non_2x/empty-coffee-cup-icon-on-white-background-simple-line-silhouette-and-clean-style-black-and-white-suitable-for-symbol-sign-icon-or-logo-free-vector.jpg",
+      "file_path": "/workspace/imgs/simple_clean_coffee_cup_icon_white_background.png_35",
+      "img_format": "JPEG",
+      "mode": "L",
+      "file_size": 18056,
+      "width": 980,
+      "height": 980,
+      "total_pixels": 960400,
+      "basic_score": 0.917915054700757
+    },
+    "llm_score": {
+      "success": true,
+      "relevance_score": 100.0,
+      "clarity_score": 100.0,
+      "watermark_score": 100.0,
+      "overall_score": 100.0,
+      "explanation": "The image perfectly matches the search query and prompt. It's a simple, clean line-art icon of a coffee cup on a pristine white background, with excellent clarity and no watermarks. It is ideal for product visualization.",
+      "file_name": "simple_clean_coffee_cup_icon_white_background.png",
+      "caption": "A simple and clean black outline icon depicting a coffee cup with a handle, presented on a pure white background. The minimalist design is ideal for various digital applications and product visualizations.",
+      "recommend": true,
+      "error": ""
+    }
+  },
+  {
+    "query": "A simple, clean icon of coffee cup with white background for product visualization",
+    "image_info": {
+      "url": "https://static.vecteezy.com/system/resources/previews/011/614/424/non_2x/coffee-cup-icon-with-ice-cube-on-white-background-simple-line-silhouette-and-clean-style-black-and-white-suitable-for-symbol-sign-icon-or-logo-free-vector.jpg",
+      "file_path": "/workspace/imgs/simple-iced-coffee-glass-icon-white-background.jpg",
+      "img_format": "JPEG",
+      "mode": "L",
+      "file_size": 23186,
+      "width": 980,
+      "height": 980,
+      "total_pixels": 960400,
+      "basic_score": 0.9184564018801801
+    },
+    "llm_score": {
+      "success": true,
+      "relevance_score": 85.0,
+      "clarity_score": 100.0,
+      "watermark_score": 100.0,
+      "overall_score": 90.0,
+      "explanation": "The image is a very clear, simple, and clean line-art icon with a pure white background, perfectly matching the 'simple clean white background' aspects of the query and prompt. The icon depicts a glass with ice cubes, which could be for iced coffee, but it's not explicitly a traditional hot coffee cup. This slight ambiguity regarding the 'coffee cup' aspect prevents a perfect relevance score.",
+      "file_name": "simple-iced-coffee-glass-icon-white-background.jpg",
+      "caption": "A minimalist black outline icon of a tall glass filled with ice cubes, suitable for an iced beverage or iced coffee, presented on a stark white background.",
+      "recommend": true,
+      "error": ""
+    }
+  },
+  {
+    "query": "A simple, clean icon of bread with white background for product visualization",
+    "image_info": {
+      "url": "https://img.freepik.com/premium-vector/bread-icon-vector-design-template-simple-clean_1309366-1792.jpg",
+      "file_path": "/workspace/imgs/simple_steaming_bread_loaf_icon_white_background.jpg",
+      "img_format": "JPEG",
+      "mode": "RGB",
+      "file_size": 17533,
+      "width": 626,
+      "height": 626,
+      "total_pixels": 391876,
+      "basic_score": 0.8153464796277782
+    },
+    "llm_score": {
+      "success": true,
+      "relevance_score": 100.0,
+      "clarity_score": 100.0,
+      "watermark_score": 100.0,
+      "overall_score": 100.0,
+      "explanation": "The image is an exact match for both the search query and the prompt. It features a simple, clean icon of a steaming loaf of bread with a perfectly white background. The clarity is excellent, and there are no watermarks, making it ideal for product visualization.",
+      "file_name": "simple_steaming_bread_loaf_icon_white_background.jpg",
+      "caption": "A minimalist black outline icon illustrating a freshly baked, steaming loaf of bread with three wavy lines indicating warmth or steam, set against a pristine white background. The design is clean, simple, and highly suitable for product visualization, user interfaces, or graphic design elements.",
+      "recommend": true,
+      "error": ""
+    }
+  },
+  {
+    "query": "A simple, clean icon of bread with white background for product visualization",
+    "image_info": {
+      "url": "https://static.vecteezy.com/system/resources/previews/036/231/552/non_2x/bread-icon-design-template-simple-and-clean-vector.jpg",
+      "file_path": "/workspace/imgs/simple_bread_loaf_icon_white_background.jpg",
+      "img_format": "JPEG",
+      "mode": "RGB",
+      "file_size": 19863,
+      "width": 980,
+      "height": 980,
+      "total_pixels": 960400,
+      "basic_score": 0.9181059679981222
+    },
+    "llm_score": {
+      "success": true,
+      "relevance_score": 100.0,
+      "clarity_score": 100.0,
+      "watermark_score": 100.0,
+      "overall_score": 95.0,
+      "explanation": "The image perfectly matches the search query and prompt, featuring a simple, clean bread icon on a pure white background. The clarity is excellent, and there are no watermarks. It is ideal for product visualization due to its clear and minimalist design.",
+      "file_name": "simple_bread_loaf_icon_white_background.jpg",
+      "caption": "A minimalist, simple, and clean vector-style icon depicting a golden-brown loaf of bread with two score marks on top, outlined in dark brown and featuring subtle shading. The bread icon is set against a pure white background, making it ideal for digital product visualization, menus, or user interfaces.",
+      "recommend": true,
+      "error": ""
+    }
+  },
+  {
+    "query": "A simple, clean icon of sugar with white background for product visualization",
+    "image_info": {
+      "url": "https://img.freepik.com/premium-vector/sugar-icon-vector-design-template-white-background_731715-2863.jpg",
+      "file_path": "/workspace/imgs/simple_sugar_cubes_spoon_icon_white_background.jpg",
+      "img_format": "PNG",
+      "mode": "L",
+      "file_size": 17224,
+      "width": 626,
+      "height": 626,
+      "total_pixels": 391876,
+      "basic_score": 0.805305942629625
+    },
+    "llm_score": {
+      "success": true,
+      "relevance_score": 100.0,
+      "clarity_score": 100.0,
+      "watermark_score": 100.0,
+      "overall_score": 100.0,
+      "explanation": "The image is perfectly relevant to the search query and prompt. It is a simple, clean line-art icon of sugar cubes on a spoon, presented against a pure white background. The clarity is excellent, and there are no watermarks, making it ideal for product visualization.",
+      "file_name": "simple_sugar_cubes_spoon_icon_white_background.jpg",
+      "caption": "A simple and clean black line-art icon depicting three geometrically shaped sugar cubes resting on the bowl of a spoon, all set against a pure white background. The illustration is minimalist and high-contrast, designed for clear visual communication.",
+      "recommend": true,
+      "error": ""
+    }
+  },
+  {
+    "query": "A simple, clean icon of sugar with white background for product visualization",
+    "image_info": {
+      "url": "https://img.freepik.com/premium-vector/sugar-icon-vector-design-template-white-background_731715-2878.jpg",
+      "file_path": "/workspace/imgs/sugar_bag_icon_simple_clean_white_background.png",
+      "img_format": "PNG",
+      "mode": "L",
+      "file_size": 22452,
+      "width": 626,
+      "height": 626,
+      "total_pixels": 391876,
+      "basic_score": 0.8059906350573875
+    },
+    "llm_score": {
+      "success": true,
+      "relevance_score": 100.0,
+      "clarity_score": 100.0,
+      "watermark_score": 100.0,
+      "overall_score": 100.0,
+      "explanation": "The image perfectly matches the search query and prompt. It's a simple, clean icon of a sugar bag with the word 'SUGAR' clearly visible, set against a pure white background. The clarity is excellent, with sharp lines, and there are no watermarks. It is ideal for product visualization.",
+      "file_name": "sugar_bag_icon_simple_clean_white_background.png",
+      "caption": "A simple, clean black outline icon depicting a bag of sugar. The bag is filled and rounded at the top, suggesting content, with small circular dots indicating granulated sugar. The word 'SUGAR' is prominently displayed in black capital letters on the front of the bag. The entire icon is set against a pure white background, making it suitable for various design and product visualization purposes.",
+      "recommend": true,
+      "error": ""
+    }
+  },
+  {
+    "query": "A simple, clean icon of butter with white background for product visualization",
+    "image_info": {
+      "url": "https://img.freepik.com/premium-vector/butter-icon-symbol-white-background_268104-6269.jpg",
+      "file_path": "/workspace/imgs/simple_butter_icon_knife_white_background.png",
+      "img_format": "JPEG",
+      "mode": "RGB",
+      "file_size": 19426,
+      "width": 626,
+      "height": 626,
+      "total_pixels": 391876,
+      "basic_score": 0.8155946309267127
+    },
+    "llm_score": {
+      "success": true,
+      "relevance_score": 100.0,
+      "clarity_score": 100.0,
+      "watermark_score": 100.0,
+      "overall_score": 100.0,
+      "explanation": "The image is perfectly relevant to the search query and prompt, featuring a simple, clean line art icon of butter with a knife on a white background. It is sharp, clear, and free of any watermarks, making it ideal for product visualization.",
+      "file_name": "simple_butter_icon_knife_white_background.png",
+      "caption": "A simple and clean black outline icon depicting a rectangular block of butter with a butter knife resting on its surface, indicating a portion has been cut. The icon is presented against a pure white background, designed for clarity and versatility in product visualization.",
+      "recommend": true,
+      "error": ""
+    }
+  }
+]
