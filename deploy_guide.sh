@@ -1,0 +1,20 @@
+#!/bin/bash
+# Quick GitHub Pages Deployment Guide
+
+echo "🚀 Market Basket Analyzer - GitHub Pages Deploy Helper"
+echo "=================================================="
+echo ""
+echo "📦 Files ready for upload to GitHub:"
+echo "   ✅ index.html (main app)"
+echo "   ✅ demo-market-basket.csv (sample data)"  
+echo "   ✅ imgs/ folder (Bulgarian product icons)"
+echo "   ✅ README.md (full documentation)"
+echo "   ✅ manifest.json (PWA support)"
+echo ""
+echo "🛠️  Next steps:"
+echo "   1. Create new GitHub repository"
+echo "   2. Upload all files from this folder"
+echo "   3. Enable GitHub Pages in Settings"
+echo "   4. Visit your https://username.github.io/reponame URL"
+echo ""
+echo "🎯 Ready for deployment! Check README.md for detailed steps."
