@@ -455,6 +455,102 @@
                 <ul style="margin: 5px 0 0 20px; text-align: left;">
                     <li>Ако файлът не се изтегли автоматично, проверете браузъра за блокирани pop-up прозорци</li>
                     <li>Файловете се запазват в папката "Downloads" на компютъра</li>
+
+  }
+
+        function printToPDF() {
+            console.log('🖨️ Starting print to PDF...');
+            
+            if (!processedData || !currentAnalysisResult) {
+                showNotification('Няма данни за експорт. Моля, първо направете анализ.', 'error');
+                return;
+            }
+            
+            showNotification('Отваряне на диалог за принтиране...', 'success');
+            
+            // Hide export buttons temporarily
+            const exportButtons = document.getElementById('exportButtons');
+            exportButtons.style.display = 'none';
+            
+            setTimeout(() => {
+                window.print();
+                exportButtons.style.display = 'block';
+            }, 500);
+        }
+
+        function exportToExcel() {
+            console.log('📊 Starting Excel export...');
+            
+            if (!processedData || !currentAnalysisResult) {
+                showNotification('Няма данни за експорт. Моля, първо направете анализ.', 'error');
+                return;
+            }
+            
+            if (typeof XLSX === 'undefined') {
+                showNotification('Excel библиотеката не е заредена. Опреснете страницата.', 'error');
+                return;
+            }
+            
+            try {
+                showNotification('Генериране на Excel файл...', 'success');
+                
+                const wb = XLSX.utils.book_new();
+                
+                // Summary sheet
+                const summaryData = [
+                    ['Market Basket Analysis Report'],
+                    ['Файл:', processedData.fileName],
+                    ['Дата:', new Date().toLocaleString('bg-BG')],
+                    [''],
+                    ['Общо транзакции:', currentAnalysisResult.totalTransactions],
+                    ['Уникални продукти:', currentAnalysisResult.uniqueItems],
+                    ['Средна кошница:', currentAnalysisResult.averageBasketSize.toFixed(2)],
+                ];
+                
+                const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
+                XLSX.utils.book_append_sheet(wb, summarySheet, 'Обобщение');
+                
+                // Top items sheet
+                const topItemsData = [
+                    ['Продукт', 'Покупки', 'Процент'],
+                    ...currentAnalysisResult.topItems.map(([item, freq]) => [
+                        item, 
+                        freq, 
+                        ((freq / currentAnalysisResult.totalTransactions) * 100).toFixed(1) + '%'
+                    ])
+                ];
+                
+                const topItemsSheet = XLSX.utils.aoa_to_sheet(topItemsData);
+                XLSX.utils.book_append_sheet(wb, topItemsSheet, 'Топ продукти');
+                
+                // Rules sheet
+                const rulesData = [
+                    ['Ако купи', 'Ще купи и', 'Support %', 'Confidence %', 'Lift'],
+                    ...currentAnalysisResult.rules.map(rule => [
+                        rule.antecedent,
+                        rule.consequent,
+                        (rule.support * 100).toFixed(2),
+                        (rule.confidence * 100).toFixed(2),
+                        rule.lift.toFixed(3)
+                    ])
+                ];
+                
+                const rulesSheet = XLSX.utils.aoa_to_sheet(rulesData);
+                XLSX.utils.book_append_sheet(wb, rulesSheet, 'Асоциативни правила');
+                
+                const fileName = `Market_Basket_Analysis_${processedData.fileName.replace(/\.[^/.]+$/, "")}_${new Date().getTime()}.xlsx`;
+                XLSX.writeFile(wb, fileName);
+                
+                console.log('✅ Excel export completed');
+                showNotification('Excel файлът е изтеглен успешно! 📊', 'success');
+                
+            } catch (error) {
+                console.error('❌ Excel Export Error:', error);
+                showNotification('Грешка при генериране на Excel: ' + error.message, 'error');
+            }
+        }
+
+                    
                     
                 </ul>
             </div>
