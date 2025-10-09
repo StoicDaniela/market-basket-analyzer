@@ -457,7 +457,41 @@
                 </ul>
             </div>
         </div>
-        
+
+function printToPDF() {
+            console.log('🖨️ Starting print to PDF...');
+            
+            if (!processedData || !currentAnalysisResult) {
+                showNotification('Няма данни за експорт. Моля, първо направете анализ.', 'error');
+                return;
+            }
+            
+            showNotification('Отваряне на диалог за принтиране...', 'success');
+            
+            // Hide export buttons temporarily
+            const exportButtons = document.getElementById('exportButtons');
+            exportButtons.style.display = 'none';
+            
+            setTimeout(() => {
+                window.print();
+                exportButtons.style.display = 'block';
+            }, 500);
+        }
+
+        function exportToExcel() {
+            console.log('📊 Starting Excel export...');
+            
+            if (!processedData || !currentAnalysisResult) {
+                showNotification('Няма данни за експорт. Моля, първо направете анализ.', 'error');
+                return;
+            }
+            
+            if (typeof XLSX === 'undefined') {
+                showNotification('Excel библиотеката не е заредена. Опреснете страницата.', 'error');
+                return;
+            }
+            
+    
         <div class="history-section" style="margin-top: 30px;">
             <h3>📚 История на анализите</h3>
             <p>Преглед на предишни анализи и резултати</p>
