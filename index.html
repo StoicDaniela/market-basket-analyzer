@@ -446,128 +446,14 @@
         <div class="export-section">
             <h3>📤 Експорт на резултатите</h3>
             <p>Изтеглете анализите в удобен формат</p>
-            <button class="btn" onclick="exportToPDF()"> Експорт PDF </button> 
-            
-            
+            <button class="btn" onclick="exportToPDF()">📑 Експорт PDF</button>
             <button class="btn" onclick="exportToExcel()">📊 Експорт Excel</button>
             <div style="margin-top: 15px; padding: 10px; background: #e8f4fd; border-radius: 5px; font-size: 0.9em;">
                 <strong>💡 Съвети за изтегляне:</strong>
-                <ul style="margin: 5px 0 0 20px; text-align: left;">  
-
-  }
-
-        function printToPDF() {
-            console.log('🖨️ Starting print to PDF...');
-            
-            if (!processedData || !currentAnalysisResult) {
-                showNotification('Няма данни за експорт. Моля, първо направете анализ.', 'error');
-                return;
-            }
-            
-            showNotification('Отваряне на диалог за принтиране...', 'success');
-            
-            // Hide export buttons temporarily
-            const exportButtons = document.getElementById('exportButtons');
-            exportButtons.style.display = 'none';
-            
-            setTimeout(() => {
-                window.print();
-                exportButtons.style.display = 'block';
-            }, 500);
-        }
-
-        function exportToExcel() {
-            console.log('📊 Starting Excel export...');
-            
-            if (!processedData || !currentAnalysisResult) {
-                showNotification('Няма данни за експорт. Моля, първо направете анализ.', 'error');
-                return;
-            }
-            
-            if (typeof XLSX === 'undefined') {
-                showNotification('Excel библиотеката не е заредена. Опреснете страницата.', 'error');
-                return;
-            }
-            
-            try {
-                showNotification('Генериране на Excel файл...', 'success');
-                
-                const wb = XLSX.utils.book_new();
-                
-                // Summary sheet
-                const summaryData = [
-                    ['Market Basket Analysis Report'],
-                    ['Файл:', processedData.fileName],
-                    ['Дата:', new Date().toLocaleString('bg-BG')],
-                    [''],
-                    ['Общо транзакции:', currentAnalysisResult.totalTransactions],
-                    ['Уникални продукти:', currentAnalysisResult.uniqueItems],
-                    ['Средна кошница:', currentAnalysisResult.averageBasketSize.toFixed(2)],
-                ];
-                
-                const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
-                XLSX.utils.book_append_sheet(wb, summarySheet, 'Обобщение');
-                
-                // Top items sheet
-                const topItemsData = [
-                    ['Продукт', 'Покупки', 'Процент'],
-                    ...currentAnalysisResult.topItems.map(([item, freq]) => [
-                        item, 
-                        freq, 
-                        ((freq / currentAnalysisResult.totalTransactions) * 100).toFixed(1) + '%'
-                    ])
-                ];
-                
-                const topItemsSheet = XLSX.utils.aoa_to_sheet(topItemsData);
-                XLSX.utils.book_append_sheet(wb, topItemsSheet, 'Топ продукти');
-                
-                // Rules sheet
-                const rulesData = [
-                    ['Ако купи', 'Ще купи и', 'Support %', 'Confidence %', 'Lift'],
-                    ...currentAnalysisResult.rules.map(rule => [
-                        rule.antecedent,
-                        rule.consequent,
-                        (rule.support * 100).toFixed(2),
-                        (rule.confidence * 100).toFixed(2),
-                        rule.lift.toFixed(3)
-                    ])
-                ];
-                
-                const rulesSheet = XLSX.utils.aoa_to_sheet(rulesData);
-                XLSX.utils.book_append_sheet(wb, rulesSheet, 'Асоциативни правила');
-                
-                const fileName = `Market_Basket_Analysis_${processedData.fileName.replace(/\.[^/.]+$/, "")}_${new Date().getTime()}.xlsx`;
-                XLSX.writeFile(wb, fileName);
-                
-                console.log('✅ Excel export completed');
-                showNotification('Excel файлът е изтеглен успешно! 📊', 'success');
-                
-            } catch (error) {
-                console.error('❌ Excel Export Error:', error);
-                showNotification('Грешка при генериране на Excel: ' + error.message, 'error');
-            }
-        }
-
-
-
-
-
-
-
-
-                    
-
-
-
-                    
+                <ul style="margin: 5px 0 0 20px; text-align: left;">
                     <li>Ако файлът не се изтегли автоматично, проверете браузъра за блокирани pop-up прозорци</li>
                     <li>Файловете се запазват в папката "Downloads" на компютъра</li>
-
-  
-        
-
-                    
-                    
+                    <li>При проблеми, отворете Developer Console (F12) за повече информация</li>
                 </ul>
             </div>
         </div>
@@ -1689,513 +1575,268 @@
                 }
                 
                 // Generate and download
-                 
-        /* PRINT STYLES */
-        @media print {
-            body { background: white !important; }
-            .container { box-shadow: none !important; margin: 0 !important; }
-            .export-buttons, .upload-section, .header { display: none !important; }
-            .notification { display: none !important; }
-        }
-        
-        /* SUCCESS BANNER */
-        .success-banner {
-            background: #d4edda; border: 1px solid #c3e6cb; color: #155724;
-            padding: 15px; border-radius: 10px; margin-bottom: 20px;
-            text-align: center; font-weight: bold;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>🛒 Market Basket Analyzer</h1>
-            <p>Професионален анализатор на пазарната кошница за бизнес аналитика</p>
-        </div>
-
-        <!-- Success Status -->
-        <div class="success-banner">
-            🎉 Приложението работи! Excel експорт е активен. PDF чрез браузърно принтиране.
-        </div>
-
-        <div class="upload-section">
-            <h3>📊 Качете файл с данни</h3>
-            <p>Поддържани формати: CSV, Excel (.xlsx)</p>
-            
-            <div class="file-input-wrapper">
-                <input type="file" id="fileInput" class="file-input" accept=".csv,.xlsx" onchange="handleFile(event)">
-                <label for="fileInput" class="file-input-label">📁 Избери файл</label>
-            </div>
-            
-            <div>
-                <button class="demo-button" onclick="loadDemoData()">🎯 Демо данни</button>
-                <button class="btn" onclick="showHistory()">📋 История</button>
-            </div>
-        </div>
-
-        <div class="export-buttons" style="display: none;" id="exportButtons">
-            <button class="btn" onclick="exportToExcel()">📊 Експорт Excel</button>
-            <button class="btn-print" onclick="printToPDF()">🖨️ Принтирай като PDF</button>
-        </div>
-
-        <div id="analysisResult"></div>
-        <div id="historySection" style="display: none;"></div>
-    </div>
-
-    <div id="notification" class="notification" style="display: none;"></div>
-
-    <script>
-        console.log('🚀 JavaScript starting...');
-        
-        let processedData = null;
-        let currentAnalysisResult = null;
-
-        function showNotification(message, type = 'success') {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.className = `notification ${type}`;
-            notification.style.display = 'block';
-            
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, 5000);
-        }
-
-        function handleFile(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            console.log('📁 File selected:', file.name, file.type, file.size);
-            showNotification('Обработване на файл...', 'success');
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    parseData(e.target.result, file.name);
-                } catch (error) {
-                    console.error('❌ File processing error:', error);
-                    showNotification('Грешка при обработка на файл: ' + error.message, 'error');
-                }
-            };
-
-            if (file.name.toLowerCase().endsWith('.csv')) {
-                reader.readAsText(file);
-            } else if (file.name.toLowerCase().endsWith('.xlsx')) {
-                reader.readAsArrayBuffer(file);
-            }
-        }
-
-        function loadDemoData() {
-            console.log('🎯 Loading demo data...');
-            showNotification('Зареждане на демо данни...', 'success');
-            
-            fetch('demo_market_basket_data.csv')
-                .then(response => response.text())
-                .then(data => {
-                    parseData(data, 'demo_market_basket_data.csv');
-                })
-                .catch(error => {
-                    console.error('❌ Demo data error:', error);
-                    showNotification('Грешка при зареждане на демо данни. Моля, качете собствен файл.', 'error');
-                });
-        }
-
-        function parseData(data, fileName) {
-            console.log('📊 Parsing data for file:', fileName);
-            
-            try {
-                let parsedData;
+                const filename = `BI_Report_${new Date().toISOString().split('T')[0]}.pdf`;
+                const pdfBlob = doc.output('blob');
                 
-                if (fileName.toLowerCase().endsWith('.xlsx')) {
-                    if (typeof XLSX === 'undefined') {
-                        throw new Error('XLSX библиотеката не е заредена');
-                    }
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const sheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[sheetName];
-                    parsedData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                if (pdfBlob && pdfBlob.size > 0) {
+                    const url = window.URL.createObjectURL(pdfBlob);
+                    console.log('PDF generated successfully:', filename, 'Size:', pdfBlob.size, 'bytes');
+                    
+                    // Use simple direct download instead of complex system
+                    downloadFile(url, filename);
                 } else {
-                    parsedData = data.split('\n').map(row => 
-                        row.split(',').map(cell => cell.trim().replace(/"/g, ''))
-                    ).filter(row => row.length > 1 && row.some(cell => cell.length > 0));
+                    throw new Error('PDF генерирането неуспешно - файлът е празен');
                 }
-
-                if (parsedData.length < 2) {
-                    throw new Error('Файлът трябва да съдържа поне 2 реда (заглавие + данни)');
-                }
-
-                const headers = parsedData[0];
-                const dataRows = parsedData.slice(1);
-
-                processedData = {
-                    fileName: fileName,
-                    headers: headers,
-                    data: dataRows,
-                    uploadTime: new Date().toISOString()
-                };
-
-                console.log('✅ Data parsed successfully. Rows:', dataRows.length, 'Columns:', headers.length);
-                displayFileInfo();
-                performAnalysis();
                 
             } catch (error) {
-                console.error('❌ Parse error:', error);
-                showNotification('Грешка при анализиране на файл: ' + error.message, 'error');
+                hideLoading();
+                showError('Грешка при генериране на PDF: ' + error.message);
+                console.error('PDF Export Error:', error);
             }
         }
-
-        function displayFileInfo() {
-            const fileInfo = `
-                <div class="file-info">
-                    <h3>📄 Информация за файла</h3>
-                    <p><strong>Име:</strong> ${processedData.fileName}</p>
-                    <p><strong>Записи:</strong> ${processedData.data.length}</p>
-                    <p><strong>Колони:</strong> ${processedData.headers.length}</p>
-                    <p><strong>Заредено:</strong> ${new Date(processedData.uploadTime).toLocaleString('bg-BG')}</p>
-                </div>
-            `;
-            
-            document.getElementById('analysisResult').innerHTML = fileInfo;
-            document.getElementById('exportButtons').style.display = 'block';
-        }
-
-        function performAnalysis() {
-            console.log('🔍 Starting market basket analysis...');
-            showNotification('Извършване на Market Basket анализ...', 'success');
-
+        
+        // Simplified download function
+        function downloadFile(url, filename) {
             try {
-                const transactions = processedData.data.map(row => {
-                    return row.filter(item => item && item.trim() !== '').map(item => item.trim());
-                }).filter(transaction => transaction.length > 0);
-
-                const itemFrequency = {};
-                const pairFrequency = {};
-                const totalTransactions = transactions.length;
-
-                transactions.forEach(transaction => {
-                    const uniqueItems = [...new Set(transaction)];
-                    
-                    uniqueItems.forEach(item => {
-                        itemFrequency[item] = (itemFrequency[item] || 0) + 1;
-                    });
-
-                    for (let i = 0; i < uniqueItems.length; i++) {
-                        for (let j = i + 1; j < uniqueItems.length; j++) {
-                            const pair = [uniqueItems[i], uniqueItems[j]].sort().join(' → ');
-                            pairFrequency[pair] = (pairFrequency[pair] || 0) + 1;
-                        }
+                hideLoading();
+                
+                // Create download link
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = filename;
+                link.style.display = 'none';
+                
+                // Add to DOM, click, and remove
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Show success message
+                showMessage(`Файлът "${filename}" е изтеглен успешно! 📁`, 'success');
+                
+                // Cleanup URL after delay
+                setTimeout(() => {
+                    try {
+                        window.URL.revokeObjectURL(url);
+                    } catch (e) {
+                        console.warn('URL cleanup error:', e);
                     }
-                });
-
-                const rules = Object.entries(pairFrequency).map(([pair, frequency]) => {
-                    const [item1, item2] = pair.split(' → ');
-                    const support = frequency / totalTransactions;
-                    const confidence1 = frequency / itemFrequency[item1];
-                    const confidence2 = frequency / itemFrequency[item2];
-                    const lift = frequency / ((itemFrequency[item1] / totalTransactions) * (itemFrequency[item2] / totalTransactions));
-
-                    return {
-                        antecedent: item1,
-                        consequent: item2,
-                        support: support,
-                        confidence: Math.max(confidence1, confidence2),
-                        lift: lift / totalTransactions,
-                        frequency: frequency
-                    };
-                }).sort((a, b) => b.lift - a.lift);
-
-                const topItems = Object.entries(itemFrequency)
-                    .sort((a, b) => b[1] - a[1])
-                    .slice(0, 10);
-
-                currentAnalysisResult = {
-                    totalTransactions,
-                    uniqueItems: Object.keys(itemFrequency).length,
-                    averageBasketSize: transactions.reduce((sum, t) => sum + t.length, 0) / transactions.length,
-                    topItems,
-                    rules: rules.slice(0, 20),
-                    generatedAt: new Date().toISOString()
-                };
-
-                displayAnalysisResults();
-                saveToHistory();
-
+                }, 1000);
+                
+                console.log('Download completed:', filename);
+                
             } catch (error) {
-                console.error('❌ Analysis error:', error);
-                showNotification('Грешка при анализ: ' + error.message, 'error');
+                hideLoading();
+                console.error('Download error:', error);
+                showError('Грешка при изтегляне: ' + error.message);
             }
         }
-
-        function displayAnalysisResults() {
-            const results = currentAnalysisResult;
-            
-            const html = `
-                <div class="analysis-section">
-                    <h2 class="section-title">📊 Резултати от анализа</h2>
-                    
-                    <div class="metric-grid">
-                        <div class="metric-card">
-                            <div class="metric-value">${results.totalTransactions}</div>
-                            <div class="metric-label">Общо транзакции</div>
-                        </div>
-                        <div class="metric-card">
-                            <div class="metric-value">${results.uniqueItems}</div>
-                            <div class="metric-label">Уникални продукти</div>
-                        </div>
-                        <div class="metric-card">
-                            <div class="metric-value">${results.averageBasketSize.toFixed(1)}</div>
-                            <div class="metric-label">Средна кошница</div>
-                        </div>
-                    </div>
-
-                    <h3>🏆 Най-популярни продукти</h3>
-                    <table class="rules-table">
-                        <thead>
-                            <tr>
-                                <th>Продукт</th>
-                                <th>Покупки</th>
-                                <th>Процент</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${results.topItems.map(([item, freq]) => `
-                                <tr>
-                                    <td>${item}</td>
-                                    <td>${freq}</td>
-                                    <td>${((freq / results.totalTransactions) * 100).toFixed(1)}%</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-
-                    <h3>🔗 Асоциативни правила</h3>
-                    <table class="rules-table">
-                        <thead>
-                            <tr>
-                                <th>Ако купи</th>
-                                <th>Ще купи и</th>
-                                <th>Support</th>
-                                <th>Confidence</th>
-                                <th>Lift</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${results.rules.map(rule => `
-                                <tr>
-                                    <td>${rule.antecedent}</td>
-                                    <td>${rule.consequent}</td>
-                                    <td>${(rule.support * 100).toFixed(2)}%</td>
-                                    <td>${(rule.confidence * 100).toFixed(2)}%</td>
-                                    <td>${rule.lift.toFixed(3)}</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-
-                    <h3>💡 Бизнес препоръки</h3>
-                    <div class="analysis-section">
-                        <ul>
-                            <li><strong>Кръстосано препоръчване:</strong> Препоръчвайте ${results.rules[0]?.consequent || 'свързани продукти'} на клиенти, които купуват ${results.rules[0]?.antecedent || 'основни продукти'}</li>
-                            <li><strong>Позициониране:</strong> Поставете ${results.topItems[0]?.[0] || 'популярни продукти'} на видни места</li>
-                            <li><strong>Промоции:</strong> Създайте пакетни оферти за често купувани заедно продукти</li>
-                            <li><strong>Инвентар:</strong> Осигурете достатъчни количества от топ ${Math.min(5, results.topItems.length)} продукта</li>
-                        </ul>
-                    </div>
-                </div>
-            `;
-            
-            document.getElementById('analysisResult').innerHTML = html;
-            showNotification('Анализът е завършен успешно! 🎉', 'success');
-        }
-
-        function printToPDF() {
-            console.log('🖨️ Starting print to PDF...');
-            
-            if (!processedData || !currentAnalysisResult) {
-                showNotification('Няма данни за експорт. Моля, първо направете анализ.', 'error');
-                return;
-            }
-            
-            showNotification('Отваряне на диалог за принтиране...', 'success');
-            
-            // Hide export buttons temporarily
-            const exportButtons = document.getElementById('exportButtons');
-            exportButtons.style.display = 'none';
-            
-            setTimeout(() => {
-                window.print();
-                exportButtons.style.display = 'block';
-            }, 500);
-        }
-
+        
         function exportToExcel() {
-            console.log('📊 Starting Excel export...');
-            
-            if (!processedData || !currentAnalysisResult) {
-                showNotification('Няма данни за експорт. Моля, първо направете анализ.', 'error');
-                return;
-            }
-            
-            if (typeof XLSX === 'undefined') {
-                showNotification('Excel библиотеката не е заредена. Опреснете страницата.', 'error');
-                return;
-            }
-            
             try {
-                showNotification('Генериране на Excel файл...', 'success');
-                
-                const wb = XLSX.utils.book_new();
-                
-                // Summary sheet
-                const summaryData = [
-                    ['Market Basket Analysis Report'],
-                    ['Файл:', processedData.fileName],
-                    ['Дата:', new Date().toLocaleString('bg-BG')],
-                    [''],
-                    ['Общо транзакции:', currentAnalysisResult.totalTransactions],
-                    ['Уникални продукти:', currentAnalysisResult.uniqueItems],
-                    ['Средна кошница:', currentAnalysisResult.averageBasketSize.toFixed(2)],
-                ];
-                
-                const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
-                XLSX.utils.book_append_sheet(wb, summarySheet, 'Обобщение');
-                
-                // Top items sheet
-                const topItemsData = [
-                    ['Продукт', 'Покупки', 'Процент'],
-                    ...currentAnalysisResult.topItems.map(([item, freq]) => [
-                        item, 
-                        freq, 
-                        ((freq / currentAnalysisResult.totalTransactions) * 100).toFixed(1) + '%'
-                    ])
-                ];
-                
-                const topItemsSheet = XLSX.utils.aoa_to_sheet(topItemsData);
-                XLSX.utils.book_append_sheet(wb, topItemsSheet, 'Топ продукти');
-                
-                // Rules sheet
-                const rulesData = [
-                    ['Ако купи', 'Ще купи и', 'Support %', 'Confidence %', 'Lift'],
-                    ...currentAnalysisResult.rules.map(rule => [
-                        rule.antecedent,
-                        rule.consequent,
-                        (rule.support * 100).toFixed(2),
-                        (rule.confidence * 100).toFixed(2),
-                        rule.lift.toFixed(3)
-                    ])
-                ];
-                
-                const rulesSheet = XLSX.utils.aoa_to_sheet(rulesData);
-                XLSX.utils.book_append_sheet(wb, rulesSheet, 'Асоциативни правила');
-                
-                const fileName = `Market_Basket_Analysis_${processedData.fileName.replace(/\.[^/.]+$/, "")}_${new Date().getTime()}.xlsx`;
-                XLSX.writeFile(wb, fileName);
-                
-                console.log('✅ Excel export completed');
-                showNotification('Excel файлът е изтеглен успешно! 📊', 'success');
-                
-            } catch (error) {
-                console.error('❌ Excel Export Error:', error);
-                showNotification('Грешка при генериране на Excel: ' + error.message, 'error');
-            }
-        }
-
-        function saveToHistory() {
-            try {
-                const historyData = JSON.parse(localStorage.getItem('marketBasketHistory') || '[]');
-                
-                const analysisRecord = {
-                    id: Date.now(),
-                    fileName: processedData.fileName,
-                    uploadTime: processedData.uploadTime,
-                    analysisTime: currentAnalysisResult.generatedAt,
-                    summary: {
-                        totalTransactions: currentAnalysisResult.totalTransactions,
-                        uniqueItems: currentAnalysisResult.uniqueItems,
-                        averageBasketSize: currentAnalysisResult.averageBasketSize,
-                        topRule: currentAnalysisResult.rules[0] || null
-                    }
-                };
-                
-                historyData.unshift(analysisRecord);
-                if (historyData.length > 20) historyData.splice(20);
-                
-                localStorage.setItem('marketBasketHistory', JSON.stringify(historyData));
-                console.log('✅ Analysis saved to history');
-                
-            } catch (error) {
-                console.error('❌ History save error:', error);
-            }
-        }
-
-        function showHistory() {
-            try {
-                const historyData = JSON.parse(localStorage.getItem('marketBasketHistory') || '[]');
-                
-                if (historyData.length === 0) {
-                    showNotification('Историята е празна', 'warning');
+                // Check if XLSX is loaded
+                if (typeof XLSX === 'undefined') {
+                    showError('Excel библиотеката не е заредена. Моля, презаредете страницата.');
                     return;
                 }
-
-                const historyHtml = `
-                    <div class="history-section">
-                        <h2 class="section-title">📋 История на анализите</h2>
-                        ${historyData.map(record => `
-                            <div class="history-item">
-                                <h4>${record.fileName}</h4>
-                                <p><strong>Анализирано:</strong> ${new Date(record.analysisTime).toLocaleString('bg-BG')}</p>
-                                <p><strong>Транзакции:</strong> ${record.summary.totalTransactions} | <strong>Продукти:</strong> ${record.summary.uniqueItems}</p>
-                                ${record.summary.topRule ? `<p><strong>Топ правило:</strong> ${record.summary.topRule.antecedent} → ${record.summary.topRule.consequent}</p>` : ''}
-                                <div class="history-actions">
-                                    <button onclick="viewAnalysis(${record.id})">👁️ Преглед</button>
-                                    <button class="delete-btn" onclick="deleteFromHistory(${record.id})">🗑️ Изтрий</button>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-
-                document.getElementById('analysisResult').innerHTML = historyHtml;
-                document.getElementById('exportButtons').style.display = 'none';
+                
+                if (!processedData) {
+                    showError('Няма данни за експорт.');
+                    return;
+                }
+                
+                showLoading('Генериране на Excel файл...');
+                
+                // Create workbook
+                const wb = XLSX.utils.book_new();
+                
+                // Add main data sheet
+                const ws = XLSX.utils.json_to_sheet(processedData.data);
+                XLSX.utils.book_append_sheet(wb, ws, 'Данни');
+                
+                // Add summary sheet
+                const summaryData = [
+                    ['Обобщение на данните'],
+                    ['Общо записи (брой)', processedData.data.length],
+                    ['Брой колони (брой)', processedData.headers.length],
+                    ['Дата на експорт', new Date().toLocaleDateString('bg-BG')]
+                ];
+                
+                const summaryWs = XLSX.utils.aoa_to_sheet(summaryData);
+                XLSX.utils.book_append_sheet(wb, summaryWs, 'Обобщение');
+                
+                // Generate file
+                const filename = `BI_Data_${new Date().toISOString().split('T')[0]}.xlsx`;
+                const excelBlob = new Blob([XLSX.write(wb, { bookType: 'xlsx', type: 'array' })], {
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                });
+                
+                const url = window.URL.createObjectURL(excelBlob);
+                console.log('Excel generated successfully:', filename, 'Size:', excelBlob.size, 'bytes');
+                downloadFile(url, filename);
                 
             } catch (error) {
-                console.error('❌ History display error:', error);
-                showNotification('Грешка при показване на история: ' + error.message, 'error');
+                showError('Грешка при генериране на Excel: ' + error.message);
+                console.error('Excel Export Error:', error);
             }
         }
-
-        function viewAnalysis(id) {
-            showNotification('Функцията за преглед ще бъде добавена скоро', 'warning');
-        }
-
-        function deleteFromHistory(id) {
-            if (!confirm('Сигурни ли сте, че искате да изтриете този анализ?')) return;
-            
-            try {
-                const historyData = JSON.parse(localStorage.getItem('marketBasketHistory') || '[]');
-                const filteredData = historyData.filter(record => record.id !== id);
-                localStorage.setItem('marketBasketHistory', JSON.stringify(filteredData));
-                showHistory();
-                showNotification('Анализът е изтрит от историята', 'success');
-                
-            } catch (error) {
-                console.error('❌ History delete error:', error);
-                showNotification('Грешка при изтриване: ' + error.message, 'error');
-            }
-        }
-
-        window.addEventListener('load', function() {
-            console.log('✅ JavaScript loaded successfully');
-            
-            // Check XLSX library
-            if (typeof XLSX !== 'undefined') {
-                console.log('✅ XLSX library loaded');
-            } else {
-                console.log('❌ XLSX library not loaded');
-                showNotification('XLSX библиотеката не е заредена. Опреснете страницата.', 'error');
-            }
-        });
         
+        // Enhanced download system - SIMPLIFIED
+        function triggerEnhancedDownload(url, filename, fileType) {
+            try {
+                // Hide loading
+                hideLoading();
+                
+                console.log(`Attempting download: ${filename}, URL: ${url.substring(0, 50)}...`);
+                
+                // Method 1: Direct download link with multiple attempts
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = filename;
+                link.style.display = 'none';
+                link.target = '_blank';
+                
+                // Add to DOM
+                document.body.appendChild(link);
+                
+                // Try clicking with user interaction simulation
+                setTimeout(() => {
+                    try {
+                        link.click();
+                        console.log('Download triggered successfully');
+                        showSimpleDownloadNotification(filename, fileType);
+                    } catch (clickError) {
+                        console.error('Click error:', clickError);
+                        // Fallback: Try opening in new window
+                        tryFallbackDownload(url, filename, fileType);
+                    }
+                }, 10);
+                
+                // Cleanup after delay
+                setTimeout(() => {
+                    try {
+                        if (document.body.contains(link)) {
+                            document.body.removeChild(link);
+                        }
+                        window.URL.revokeObjectURL(url);
+                    } catch (cleanupError) {
+                        console.error('Cleanup error:', cleanupError);
+                    }
+                }, 3000);
+                
+            } catch (error) {
+                console.error('Download error:', error);
+                tryFallbackDownload(url, filename, fileType);
+            }
+        }
+        
+        function tryFallbackDownload(url, filename, fileType) {
+            try {
+                // Fallback method: Open in new window with instructions
+                const newWindow = window.open(url, '_blank');
+                if (newWindow) {
+                    // Show notification with instructions
+                    showDownloadInstructionsNotification(filename, fileType);
+                } else {
+                    // Pop-up blocked, show manual download
+                    showManualDownloadNotification(url, filename, fileType);
+                }
+            } catch (fallbackError) {
+                console.error('Fallback error:', fallbackError);
+                showError('Не успях да започна изтегляне. Моля, проверете настройките на браузъра за pop-up блокиране.');
+            }
+        }
+        
+        // Simple download notification
+        function showSimpleDownloadNotification(filename, fileType) {
+            const notification = document.createElement('div');
+            notification.className = 'download-notification success';
+            notification.innerHTML = `
+                <div class="notification-header">
+                    <span>✅</span>
+                    <span>${fileType} е генериран!</span>
+                </div>
+                <div class="notification-body">
+                    <strong>${filename}</strong><br>
+                    <small>Файлът трябва да се изтегли автоматично.<br>
+                    Ако не се случи, проверете папката "Downloads" или разрешенията на браузъра.</small>
+                </div>
+                <div class="notification-actions">
+                    <button onclick="this.parentElement.parentElement.remove()" class="notification-btn">
+                        ✕ Затвори
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto-close after 5 seconds
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+        
+        function showDownloadInstructionsNotification(filename, fileType) {
+            const notification = document.createElement('div');
+            notification.className = 'download-notification info';
+            notification.innerHTML = `
+                <div class="notification-header">
+                    📥 ${fileType} изтегляне започна
+                </div>
+                <div class="notification-body">
+                    <strong>${filename}</strong><br>
+                    <small>Файлът се отваря в нов прозорец.<br>
+                    Използвайте Ctrl+S за запазване или десен клик → "Запази като..."</small>
+                </div>
+                <div class="notification-actions">
+                    <button onclick="this.parentElement.parentElement.remove()" class="notification-btn">
+                        ✓ Разбрах
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    notification.remove();
+                }
+            }, 10000);
+        }
+        
+        function showManualDownloadNotification(url, filename, fileType) {
+            const notification = document.createElement('div');
+            notification.className = 'download-notification error';
+            notification.innerHTML = `
+                <div class="notification-header">
+                    ⚠️ Нужна е ръчна помощ
+                </div>
+                <div class="notification-body">
+                    <strong>${filename}</strong><br>
+                    <small>Браузърът блокира автоматичното изтегляне.<br>
+                    Кликнете бутона за ръчно изтегляне:</small>
+                </div>
+                <div class="notification-actions">
+                    <a href="${url}" download="${filename}" class="notification-btn" style="background: #28a745; color: white; text-decoration: none; padding: 8px 15px; border-radius: 5px; margin: 5px;">
+                        📥 Изтегли файла
+                    </a>
+                    <button onclick="this.parentElement.parentElement.remove()" class="notification-btn">
+                        ✕ Затвори
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto-close after 15 seconds
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    notification.remove();
+                }
+            }, 15000);
+        }
     </script>
 </body>
 </html>
