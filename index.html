@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BI Система за Анализ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0D8BB1 0%, #4A90A4 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-box h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #0D8BB1;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #0D8BB1 0%, #4A90A4 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .main-app {
+            display: none;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            background: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-tab:hover {
+            background: #f8f9fa;
+        }
+
+        .nav-tab.active {
+            background: #0D8BB1;
+            color: white;
+            border-bottom-color: #065a75;
+        }
+
+        .tab-content {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            min-height: 600px;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        .file-upload-area {
+            border: 3px dashed #0D8BB1;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .file-upload-area:hover {
+            background: #f0f9ff;
+            border-color: #065a75;
+        }
+
+        .file-upload-area.dragover {
+            background: #e6f3ff;
+            border-color: #065a75;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            color: #0D8BB1;
+            margin-bottom: 20px;
+        }
+
+        .upload-text {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .upload-subtext {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #0D8BB1 0%, #4A90A4 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(13, 139, 177, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+        }
+
+        .results-container {
+            margin-top: 30px;
+        }
+
+        .results-tabs {
+            display: flex;
+            border-bottom: 2px solid #ecf0f1;
+            margin-bottom: 20px;
+        }
+
+        .results-tab {
+            padding: 15px 25px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #7f8c8d;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .results-tab:hover {
+            color: #0D8BB1;
+        }
+
+        .results-tab.active {
+            color: #0D8BB1;
+            border-bottom-color: #0D8BB1;
+            font-weight: 600;
+        }
+
+        .combinations-container {
+            display: grid;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .combination-item {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .combination-item:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .combination-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .combination-products {
+            font-size: 1.1rem;
+            color: #2c3e50;
+        }
+
+        .combination-metrics {
+            display: flex;
+            gap: 15px;
+        }
+
+        .metric {
+            text-align: center;
+            min-width: 60px;
+        }
+
+        .metric-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #0D8BB1;
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
+        }
+
+        .network-container {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            border: 2px solid #ecf0f1;
+            border-radius: 10px;
+            background: #f8f9fa;
+            overflow: hidden;
+        }
+
+        #network-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .control-group label {
+            font-weight: 500;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .control-group input[type="range"] {
+            width: 150px;
+            margin: 5px 0;
+        }
+
+        .control-group input[type="number"] {
+            width: 80px;
+            padding: 5px 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .value-display {
+            font-weight: bold;
+            color: #0D8BB1;
+            font-size: 14px;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+        }
+
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+
+        .alert-info {
+            color: #0c5460;
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+        }
+
+        .alert-warning {
+            color: #856404;
+            background-color: #fff3cd;
+            border-color: #ffeaa7;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #ecf0f1;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #0D8BB1 0%, #4A90A4 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .nav-tabs {
+                flex-direction: column;
+            }
+            
+            .tab-content {
+                padding: 20px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+        
+        /* Print styles for PDF generation */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            
+            #combinations-container, #combinations-container * {
+                visibility: visible;
+            }
+            
+            #combinations-container {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+            
+            .combination-item {
+                break-inside: avoid;
+                margin-bottom: 15px;
+            }
+            
+            .header, .nav-tabs, #export-buttons, .btn {
+                display: none !important;
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="login-container" class="login-container">
+        <div class="login-box">
+            <h2>🌊 Влизане в системата</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">Потребителско име:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Парола:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="login-btn">Влизане</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="main-app" class="main-app">
+        <div class="container">
+            <!-- Header -->
+            <div class="header">
+                <button class="logout-btn" onclick="logout()">Излизане</button>
+                <h1>🚀 Интерактивен BI Дашборд за Пазарна Кошница</h1>
+                <p>Професионален интерактивен дашборд с визуални продукти и цветово кодирани анализи</p>
+            </div>
+
+            <!-- Show Features Alert -->
+            <div class="alert alert-success">
+                <strong>🎉 НОВИТЕ ПОДОБРЕНИЯ СА АКТИВНИ!</strong><br>
+                ✅ Ново заглавие с ракета 🚀<br>
+                ✅ Цветово кодирани комбинации според поддръжката<br>
+                ✅ Подобрени емоджи за всеки продукт 🛒<br>
+                ✅ Интерактивни мрежови диаграми с D3.js<br>
+                ✅ Надеждни експорт функции за Excel и PDF<br>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="showTab('analysis')">📊 Анализ на данни</button>
+                <button class="nav-tab" onclick="showTab('history')">📚 История на анализите</button>
+                <button class="nav-tab" onclick="showTab('reports')">📄 Генериране на доклади</button>
+            </div>
+
+            <!-- Analysis Tab -->
+            <div id="analysis-tab" class="tab-content">
+                <div class="tab-pane active">
+                    <h2>📊 Анализ на пазарната кошница</h2>
+                    
+                    <!-- File Upload -->
+                    <div class="file-upload-area" onclick="document.getElementById('file-input').click()">
+                        <div class="upload-icon">📁</div>
+                        <div class="upload-text">Качете вашия CSV или XLSX файл</div>
+                        <div class="upload-subtext">Кликнете тук или плъзнете файла</div>
+                        <input type="file" id="file-input" class="file-input" accept=".csv,.xlsx,.xls">
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="controls">
+                        <div class="control-group">
+                            <label for="min-support">Минимална поддръжка:</label>
+                            <input type="range" id="min-support" min="0.01" max="0.5" step="0.01" value="0.02">
+                            <span class="value-display" id="support-value">0.1</span>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label for="min-confidence">Минимална увереност:</label>
+                            <input type="range" id="min-confidence" min="0.1" max="1.0" step="0.05" value="0.3">
+                            <span class="value-display" id="confidence-value">0.6</span>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label for="max-combinations">Максимален брой комбинации:</label>
+                            <input type="number" id="max-combinations" min="5" max="100" value="20">
+                        </div>
+                    </div>
+
+                    <button class="btn" onclick="performMarketBasketAnalysis()">🚀 Стартиране на анализа</button>
+
+                    <!-- Results -->
+                    <div class="results-container" id="results-container" style="display: none;">
+                        <div class="results-tabs">
+                            <button class="results-tab active" onclick="showResultsTab('combinations')">🛒 Топ комбинации</button>
+                            <button class="results-tab" onclick="showResultsTab('network')">🕸️ Мрежова визуализация</button>
+                        </div>
+
+                        <!-- Combinations Results -->
+                        <div id="combinations-results" class="tab-pane active">
+                            <div id="combinations-container"></div>
+                        </div>
+
+                        <!-- Network Visualization -->
+                        <div id="network-results" class="tab-pane" style="display: none;">
+                            <h3>🕸️ Мрежова визуализация на връзките</h3>
+                            <div class="network-container">
+                                <canvas id="network-canvas"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Tab -->
+            <div id="history-tab" class="tab-content" style="display: none;">
+                <div class="tab-pane">
+                    <h2>📚 История на анализите</h2>
+                    <div class="alert alert-info">
+                        <strong>📊 Функционалност в разработка</strong><br>
+                        Тази секция ще съхранява история на всички ваши анализи.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Tab -->
+            <div id="reports-tab" class="tab-content" style="display: none;">
+                <div class="tab-pane">
+                    <h2>📄 Генериране на доклади</h2>
+                    <div class="alert alert-info">
+                        <strong>📊 Експортирайте вашите анализи</strong><br>
+                        Изберете формат за сваляне на резултатите от анализа.
+                    </div>
+                    
+                    <div id="export-buttons" style="margin-top: 30px;">
+                        <h3>🎯 Експорт опции:</h3>
+                        <div style="display: flex; gap: 15px; margin-top: 20px; flex-wrap: wrap;">
+                            <button class="btn" onclick="exportToExcel()" style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);">
+                                📊 Експорт в Excel
+                            </button>
+                            <button class="btn" onclick="printToPDF()" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+                                🖨️ Принтирай като PDF
+                            </button>
+                        </div>
+                        
+                        <div id="export-status" style="margin-top: 20px; display: none;" class="alert alert-success">
+                            <strong>✅ Експортът е готов!</strong>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 40px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                        <h4>💡 Инструкции:</h4>
+                        <ul style="margin-top: 10px; line-height: 1.8;">
+                            <li><strong>📊 Excel експорт:</strong> Сваля файл с всички комбинации и техните метрики</li>
+                            <li><strong>🖨️ PDF експорт:</strong> Отваря диалог за принтиране - изберете "Save as PDF"</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentData = null;
+        let currentResults = null;
+
+        // Authentication
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (username === 'admin' && password === 'password') {
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('main-app').style.display = 'block';
+                console.log('🎉 Login successful! All features activated!');
+            } else {
+                alert('Невалидни данни за влизане!');
+            }
+        });
+
+        function logout() {
+            document.getElementById('login-container').style.display = 'flex';
+            document.getElementById('main-app').style.display = 'none';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        // Tab management
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.style.display = 'none';
+            });
+            
+            // Remove active class from all nav tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').style.display = 'block';
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        function showResultsTab(tabName) {
+            // Hide all result tabs
+            document.querySelectorAll('#results-container .tab-pane').forEach(tab => {
+                tab.style.display = 'none';
+            });
+            
+            // Remove active class from all result tabs
+            document.querySelectorAll('.results-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected result tab
+            document.getElementById(tabName + '-results').style.display = 'block';
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+            
+            // If showing network tab, redraw the diagram
+            if (tabName === 'network' && currentResults) {
+                setTimeout(() => drawNetworkDiagram(currentResults), 100);
+            }
+        }
+
+        // File handling
+        document.getElementById('file-input').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const fileExtension = file.name.split('.').pop().toLowerCase();
+                
+                if (fileExtension === 'csv') {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        currentData = e.target.result;
+                        alert('✅ CSV файл зареден успешно! Готов за анализ.');
+                        console.log('📁 CSV file loaded successfully');
+                    };
+                    reader.readAsText(file);
+                } else if (fileExtension === 'xlsx' || fileExtension === 'xls') {
+                    alert('XLSX поддръжка се разработва. Моля, използвайте CSV файл.');
+                }
+            }
+        });
+
+        // Drag and drop
+        const uploadArea = document.querySelector('.file-upload-area');
+        
+        uploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                document.getElementById('file-input').files = files;
+                document.getElementById('file-input').dispatchEvent(new Event('change'));
+            }
+        });
+
+        // Main analysis function
+        function performMarketBasketAnalysis() {
+            if (!currentData) {
+                alert('⚠️ Моля, първо качете CSV файл!');
+                return;
+            }
+
+            console.log('🚀 Starting market basket analysis...');
+
+            const minSupport = parseFloat(document.getElementById('min-support').value);
+            const minConfidence = parseFloat(document.getElementById('min-confidence').value);
+            const maxCombinations = parseInt(document.getElementById('max-combinations').value);
+
+            console.log(`⚙️ Analysis parameters:
+            - Min Support: ${minSupport}
+            - Min Confidence: ${minConfidence}  
+            - Max Combinations: ${maxCombinations}`);
+
+            try {
+                currentResults = analyzeMarketBasket(currentData, minSupport, minConfidence, maxCombinations);
+                
+                if (currentResults && currentResults.combinations && currentResults.combinations.length > 0) {
+                    displayAnalysisResults(currentResults);
+                    document.getElementById('results-container').style.display = 'block';
+                    console.log('✅ Analysis completed successfully!');
+                } else {
+                    alert('⚠️ Няма намерени комбинации с текущите настройки.\n\n💡 Опитайте:\n• Намалете минималната поддръжка (под 5%)\n• Намалете минималната увереност (под 50%)\n• Увеличете броя комбинации');
+                    console.log('⚠️ No combinations found with current settings');
+                }
+            } catch (error) {
+                console.error('❌ Analysis error:', error);
+                alert('❌ Грешка при анализа: ' + error.message);
+            }
+        }
+
+        function analyzeMarketBasket(csvData, minSupport, minConfidence, maxCombinations) {
+            console.log('🔍 Starting enhanced market basket analysis...');
+            
+            // Parse CSV data
+            const lines = csvData.trim().split('\n');
+            const transactions = [];
+            const allProducts = new Set();
+
+            lines.forEach((line, index) => {
+                if (index === 0) return; // Skip header
+                
+                const transaction = [];
+                const values = line.split(',');
+                
+                values.forEach(value => {
+                    if (value && value.trim() !== '') {
+                        const product = value.trim().toLowerCase();
+                        allProducts.add(product);
+                        transaction.push(product);
+                    }
+                });
+                if (transaction.length > 0) {
+                    transactions.push(transaction);
+                }
+            });
+
+            const productsArray = Array.from(allProducts);
+            console.log('📦 Unique products found:', productsArray.length);
+
+            // Calculate support for individual items
+            const itemSupport = {};
+            productsArray.forEach(product => {
+                const count = transactions.filter(transaction => transaction.includes(product)).length;
+                itemSupport[product] = count / transactions.length;
+            });
+
+            // Filter items by minimum support
+            const frequentItems = productsArray.filter(product => itemSupport[product] >= minSupport);
+            console.log('⭐ Frequent items:', frequentItems.length);
+
+            // Generate combinations and calculate support
+            const combinations = [];
+            
+            // 2-item combinations
+            for (let i = 0; i < frequentItems.length; i++) {
+                for (let j = i + 1; j < frequentItems.length; j++) {
+                    const combo = [frequentItems[i], frequentItems[j]];
+                    const count = transactions.filter(transaction => 
+                        combo.every(item => transaction.includes(item))
+                    ).length;
+                    
+                    const support = count / transactions.length;
+                    
+                    if (support >= minSupport) {
+                        const confidenceAB = support / itemSupport[combo[0]];
+                        const confidenceBA = support / itemSupport[combo[1]];
+                        
+                        if (confidenceAB >= minConfidence || confidenceBA >= minConfidence) {
+                            combinations.push({
+                                items: combo,
+                                support: support,
+                                confidence: Math.max(confidenceAB, confidenceBA),
+                                count: count,
+                                lift: support / (itemSupport[combo[0]] * itemSupport[combo[1]])
+                            });
+                        }
+                    }
+                }
+            }
+
+            // Sort by support (descending) and limit results
+            combinations.sort((a, b) => b.support - a.support);
+            const limitedCombinations = combinations.slice(0, maxCombinations);
+
+            console.log('🎯 Enhanced combinations found:', limitedCombinations.length);
+
+            return {
+                combinations: limitedCombinations,
+                uniqueProducts: productsArray.length,
+                data: transactions,
+                itemSupport: itemSupport,
+                minSupport: minSupport,
+                minConfidence: minConfidence
+            };
+        }
+
+        function displayAnalysisResults(results) {
+            const container = document.getElementById('combinations-container');
+            
+            if (!results.combinations || results.combinations.length === 0) {
+                container.innerHTML = `
+                    <div class="alert alert-warning">
+                        <strong>⚠️ Няма намерени комбинации</strong><br>
+                        Опитайте да намалите минималната поддръжка или увереност.
+                    </div>
+                `;
+                return;
+            }
+
+            // NEW: Enhanced display with colored rows
+            container.innerHTML = results.combinations.map((combo, index) => {
+                const supportPercent = (combo.support * 100).toFixed(1);
+                const confidencePercent = (combo.confidence * 100).toFixed(1);
+                const liftValue = combo.lift.toFixed(2);
+                
+                // NEW: Get color based on support level
+                const backgroundColor = getColorForSupport(combo.support);
+                const textColor = combo.support >= 0.6 ? 'white' : 'black';
+                
+                return `
+                    <div class="combination-item" style="background-color: ${backgroundColor}; color: ${textColor}; border: 2px solid ${backgroundColor};">
+                        <div class="combination-header">
+                            <div class="combination-products">
+                                <strong>🛒 ${combo.items.map(item => 
+                                    item.charAt(0).toUpperCase() + item.slice(1)
+                                ).join(' + ')}</strong>
+                            </div>
+                            <div class="combination-metrics">
+                                <div class="metric">
+                                    <div class="metric-value" style="color: ${textColor};">${supportPercent}%</div>
+                                    <div class="metric-label" style="color: ${textColor};">Поддръжка</div>
+                                </div>
+                                <div class="metric">
+                                    <div class="metric-value" style="color: ${textColor};">${confidencePercent}%</div>
+                                    <div class="metric-label" style="color: ${textColor};">Увереност</div>
+                                </div>
+                                <div class="metric">
+                                    <div class="metric-value" style="color: ${textColor};">${liftValue}</div>
+                                    <div class="metric-label" style="color: ${textColor};">Lift</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 10px; font-size: 14px; opacity: 0.9;">
+                            ✨ Тази комбинация се среща в ${combo.count} от ${results.data.length} транзакции
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            console.log('🎨 Enhanced table with colored rows displayed!');
+
+            // Draw enhanced network diagram
+            drawNetworkDiagram(results);
+        }
+
+        // NEW: Enhanced color function 
+        function getColorForSupport(support) {
+            if (support >= 0.6) return '#e74c3c';      // Red for high support
+            if (support >= 0.4) return '#9b59b6';      // Purple for medium-high
+            if (support >= 0.2) return '#3498db';      // Blue for medium
+            if (support >= 0.1) return '#2ecc71';      // Green for low
+            return '#f39c12';                          // Orange for very low
+        }
+
+        // Enhanced product emojis function
+        function getProductEmoji(productName) {
+            const emojiMap = {
+                'хляб': '🍞', 'мляко': '🥛', 'масло': '🧈', 'яйца': '🥚', 'сирене': '🧀',
+                'кашкавал': '🧀', 'йогурт': '🍦', 'извара': '🥛', 'домати': '🍅', 'краставици': '🥒',
+                'чушки': '🌶️', 'лук': '🧅', 'моркови': '🥕', 'картофи': '🥔', 'салата': '🥬',
+                'ябълки': '🍎', 'банани': '🍌', 'портокали': '🍊', 'грозде': '🍇', 'ягоди': '🍓',
+                'пилешко': '🍗', 'свинско': '🥩', 'риба': '🐟', 'наденица': '🌭', 'шунка': '🍖',
+                'ориз': '🍚', 'макарони': '🍝', 'фасул': '🫘', 'леща': '🟤'
+            };
+            return emojiMap[productName.toLowerCase()] || '🔸';
+        }
+
+        function drawNetworkDiagram(results) {
+            const canvas = document.getElementById('network-canvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const rect = canvas.getBoundingClientRect();
+            
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            
+            if (!results.combinations || results.combinations.length === 0) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#666';
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Няма данни за визуализация', canvas.width/2, canvas.height/2);
+                return;
+            }
+
+            console.log('🕸️ Drawing enhanced network diagram...');
+
+            // Prepare data for D3
+            const nodes = [];
+            const links = [];
+            const nodeMap = new Map();
+
+            // Create nodes from combinations
+            results.combinations.forEach(combo => {
+                combo.items.forEach(item => {
+                    if (!nodeMap.has(item)) {
+                        const node = {
+                            id: item,
+                            label: item.charAt(0).toUpperCase() + item.slice(1),
+                            support: results.itemSupport[item] || 0,
+                            emoji: getProductEmoji(item) // NEW: Add emoji
+                        };
+                        nodes.push(node);
+                        nodeMap.set(item, node);
+                    }
+                });
+
+                if (combo.items.length >= 2) {
+                    links.push({
+                        source: combo.items[0],
+                        target: combo.items[1],
+                        support: combo.support,
+                        confidence: combo.confidence,
+                        weight: combo.support * 10
+                    });
+                }
+            });
+
+            console.log(`🎯 Drawing ${nodes.length} enhanced nodes and ${links.length} links`);
+
+            // Create D3 simulation
+            const simulation = d3.forceSimulation(nodes)
+                .force('link', d3.forceLink(links).id(d => d.id).distance(120))
+                .force('charge', d3.forceManyBody().strength(-400))
+                .force('center', d3.forceCenter(canvas.width / 2, canvas.height / 2))
+                .force('collision', d3.forceCollide().radius(50));
+
+            function tick() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw links with enhanced styling
+                links.forEach(link => {
+                    ctx.beginPath();
+                    ctx.moveTo(link.source.x, link.source.y);
+                    ctx.lineTo(link.target.x, link.target.y);
+                    ctx.strokeStyle = getColorForSupport(link.support);
+                    ctx.lineWidth = Math.max(2, link.support * 15);
+                    ctx.globalAlpha = 0.7;
+                    ctx.stroke();
+                    ctx.globalAlpha = 1.0;
+                });
+                
+                // Draw enhanced nodes with emojis and borders
+                nodes.forEach(node => {
+                    const nodeColor = getColorForSupport(node.support);
+                    
+                    // Draw colored circle background
+                    ctx.beginPath();
+                    ctx.arc(node.x, node.y, 30, 0, 2 * Math.PI);
+                    ctx.fillStyle = nodeColor;
+                    ctx.fill();
+                    
+                    // Draw white border
+                    ctx.strokeStyle = '#fff';
+                    ctx.lineWidth = 4;
+                    ctx.stroke();
+                    
+                    // Draw emoji in center
+                    ctx.font = '24px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillStyle = '#fff';
+                    ctx.fillText(node.emoji, node.x, node.y + 8);
+                    
+                    // Draw label below
+                    ctx.fillStyle = '#333';
+                    ctx.font = 'bold 12px Arial';
+                    ctx.fillText(node.label, node.x, node.y + 50);
+                });
+            }
+
+            simulation.on('tick', tick);
+            
+            setTimeout(() => {
+                simulation.stop();
+                console.log('🎨 Enhanced network diagram completed!');
+            }, 3000);
+        }
+
+        // Control updates
+        document.getElementById('min-support').addEventListener('input', function() {
+            document.getElementById('support-value').textContent = this.value;
+        });
+
+        document.getElementById('min-confidence').addEventListener('input', function() {
+            document.getElementById('confidence-value').textContent = this.value;
+        });
+
+        // Export functions
+        function exportToExcel() {
+            if (!currentResults || !currentResults.combinations || currentResults.combinations.length === 0) {
+                alert('⚠️ Няма данни за експортиране! Първо направете анализ.');
+                return;
+            }
+
+            console.log('📊 Starting Excel export...');
+
+            // Prepare data for Excel
+            const excelData = currentResults.combinations.map((combo, index) => ({
+                'Ред': index + 1,
+                'Продукти': combo.items.join(' + '),
+                'Поддръжка (%)': (combo.support * 100).toFixed(1),
+                'Увереност (%)': (combo.confidence * 100).toFixed(1),
+                'Lift': combo.lift.toFixed(2),
+                'Брой транзакции': combo.count,
+                'Общо транзакции': currentResults.data.length
+            }));
+
+            // Create workbook
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(excelData);
+
+            // Add some styling and auto-width
+            const wscols = [
+                { wch: 5 },   // Ред
+                { wch: 30 },  // Продукти  
+                { wch: 15 },  // Поддръжка
+                { wch: 15 },  // Увереност
+                { wch: 10 },  // Lift
+                { wch: 18 },  // Брой транзакции
+                { wch: 18 }   // Общо транзакции
+            ];
+            ws['!cols'] = wscols;
+
+            // Add worksheet to workbook
+            XLSX.utils.book_append_sheet(wb, ws, 'Анализ на кошница');
+
+            // Generate filename with timestamp
+            const now = new Date();
+            const timestamp = now.toISOString().slice(0, 19).replace(/[:-]/g, '');
+            const filename = `market_basket_analysis_${timestamp}.xlsx`;
+
+            // Save file
+            XLSX.writeFile(wb, filename);
+
+            console.log('✅ Excel file generated successfully:', filename);
+            
+            // Show success message
+            const statusDiv = document.getElementById('export-status');
+            statusDiv.style.display = 'block';
+            statusDiv.innerHTML = `<strong>✅ Excel файлът е изтеглен:</strong> ${filename}`;
+            
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function printToPDF() {
+            if (!currentResults || !currentResults.combinations || currentResults.combinations.length === 0) {
+                alert('⚠️ Няма данни за принтиране! Първо направете анализ.');
+                return;
+            }
+
+            console.log('🖨️ Opening print dialog for PDF generation...');
+            
+            // Show success message
+            const statusDiv = document.getElementById('export-status');
+            statusDiv.style.display = 'block';
+            statusDiv.innerHTML = `
+                <strong>🖨️ Отваря се диалогът за принтиране...</strong><br>
+                Изберете "Save as PDF" или "Запази като PDF" от опциите за принтиране.
+            `;
+            
+            // Open print dialog
+            window.print();
+            
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 8000);
+        }
+
+        // Initialize
+        console.log('🚀 Bullet-proof version loaded with all enhancements!');
+    </script>
+</body>
+</html>
