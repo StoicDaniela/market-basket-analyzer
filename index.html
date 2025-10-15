@@ -1338,6 +1338,47 @@
                         },
                         legend: {
                             position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    // Add data labels directly on the chart
+                    animation: {
+                        onComplete: function() {
+                            const ctx = this.chart.ctx;
+                            ctx.font = "14px Arial";
+                            ctx.fillStyle = "#000";
+                            ctx.textAlign = "center";
+                            ctx.textBaseline = "middle";
+                            
+                            this.data.datasets.forEach((dataset, i) => {
+                                const meta = this.getDatasetMeta(i);
+                                meta.data.forEach((element, index) => {
+                                    const data = dataset.data[index];
+                                    const total = dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((data / total) * 100).toFixed(1);
+                                    
+                                    const position = element.tooltipPosition();
+                                    
+                                    // White background for better readability
+                                    ctx.fillStyle = "#fff";
+                                    ctx.fillRect(position.x - 20, position.y - 10, 40, 20);
+                                    
+                                    // Black text
+                                    ctx.fillStyle = "#000";
+                                    ctx.fillText(`${data}`, position.x, position.y - 2);
+                                    ctx.fillText(`(${percentage}%)`, position.x, position.y + 10);
+                                });
+                            });
                         }
                     }
                 }
@@ -1470,7 +1511,7 @@
             return Object.values(transactions).map(set => Array.from(set));
         }
         
-        function findFrequentItemsets(transactions, minSupport = 0.1) {
+        function findFrequentItemsets(transactions, minSupport = 0.05) {
             const itemCounts = {};
             const totalTransactions = transactions.length;
             
@@ -1505,7 +1546,7 @@
             return [...frequentItems, ...frequent2Itemsets];
         }
         
-        function generateAssociationRules(frequentItemsets, transactions, minConfidence = 0.5) {
+        function generateAssociationRules(frequentItemsets, transactions, minConfidence = 0.25) {
             const rules = [];
             const totalTransactions = transactions.length;
             
@@ -1602,12 +1643,43 @@
                     html += `
                         <div class="product-item">
                             <strong>${antecedentIcon} ${rule.antecedent[0]} → ${consequentIcon} ${rule.consequent[0]}</strong><br>
-                            <small>Увереност: ${(rule.confidence * 100).toFixed(1)}% | Lift: ${rule.lift.toFixed(2)}</small>
+                            <small>Увереност: ${(rule.confidence * 100).toFixed(1)}% | Поддръжка: ${(rule.support * 100).toFixed(1)}% | Lift: ${rule.lift.toFixed(2)}</small>
                         </div>
                     `;
                 });
                 
                 html += `</div></div>`;
+            } else {
+                // Show debug information when no rules are found
+                const twoItemsets = frequentItemsets.filter(item => item.items.length === 2);
+                html += `
+                    <div class="business-insight products">
+                        <h4>🔗 Правила за асоциация:</h4>
+                        <p><em>Не са открити силни правила за асоциация с минимална увереност от 25%.</em></p>
+                `;
+                
+                if (twoItemsets.length > 0) {
+                    html += `
+                        <p><strong>Открити двойки продукти (слаба връзка):</strong></p>
+                        <div class="product-list">
+                    `;
+                    twoItemsets.slice(0, 5).forEach(itemset => {
+                        const [itemA, itemB] = itemset.items;
+                        const iconA = getProductIcon(itemA);
+                        const iconB = getProductIcon(itemB);
+                        html += `
+                            <div class="product-item">
+                                <strong>${iconA} ${itemA} & ${iconB} ${itemB}</strong><br>
+                                <small>Купени заедно ${itemset.count} пъти (${(itemset.support * 100).toFixed(1)}% от всички транзакции)</small>
+                            </div>
+                        `;
+                    });
+                    html += `</div>`;
+                } else {
+                    html += `<p><em>Не са открити и двойки продукти, които се купуват заедно често.</em></p>`;
+                }
+                
+                html += `</div>`;
             }
             
             // Show top individual products
