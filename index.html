@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Business Intelligence Analyzer</title>
+    <title>Business Intelligence Analyzer v2.2 - Fixed Charts</title>
     <script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -1151,6 +1151,26 @@
         
         function createCharts() {
             const container = document.getElementById('chartContainer');
+            if (!container) {
+                console.error('Chart container element not found in DOM');
+                showError('Грешка: Не може да се намери контейнера за диаграми');
+                return;
+            }
+            
+            // Clear existing content
+            container.innerHTML = '';
+            
+            // Destroy existing charts
+            if (window.currentCharts && window.currentCharts.length > 0) {
+                window.currentCharts.forEach(chart => {
+                    try {
+                        chart.destroy();
+                    } catch (e) {
+                        console.warn('Error destroying chart:', e);
+                    }
+                });
+                window.currentCharts = [];
+            }
             
             // Find suitable columns for charting
             const numericColumns = findNumericColumns();
@@ -1237,6 +1257,11 @@
             canvas.className = 'chart-canvas';
             
             const container = document.getElementById('chartContainer');
+            if (!container) {
+                console.error('Chart container not found for bar chart');
+                return;
+            }
+            
             const chartDiv = document.createElement('div');
             chartDiv.className = 'chart-container';
             chartDiv.innerHTML = `<h3>📊 ${categoryColumn} vs ${valueColumn} (брой)</h3>`;
@@ -1244,6 +1269,11 @@
             container.appendChild(chartDiv);
             
             const ctx = canvas.getContext('2d');
+            if (!ctx) {
+                console.error('Could not get canvas context for bar chart');
+                return;
+            }
+            
             const chart = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -1309,6 +1339,11 @@
             canvas.className = 'chart-canvas';
             
             const container = document.getElementById('chartContainer');
+            if (!container) {
+                console.error('Chart container not found for pie chart');
+                return;
+            }
+            
             const chartDiv = document.createElement('div');
             chartDiv.className = 'chart-container';
             chartDiv.innerHTML = `<h3>🥧 Разпределение на ${categoryColumn} (брой)</h3>`;
@@ -1316,6 +1351,11 @@
             container.appendChild(chartDiv);
             
             const ctx = canvas.getContext('2d');
+            if (!ctx) {
+                console.error('Could not get canvas context for pie chart');
+                return;
+            }
+            
             const chart = new Chart(ctx, {
                 type: 'pie',
                 data: {
@@ -1337,7 +1377,29 @@
                             text: `Разпределение на ${categoryColumn} (брой)`
                         },
                         legend: {
-                            position: 'bottom'
+                            position: 'bottom',
+                            labels: {
+                                generateLabels: function(chart) {
+                                    const data = chart.data;
+                                    if (data.labels.length && data.datasets.length) {
+                                        const dataset = data.datasets[0];
+                                        const total = dataset.data.reduce((a, b) => a + b, 0);
+                                        
+                                        return data.labels.map((label, i) => {
+                                            const value = dataset.data[i];
+                                            const percentage = ((value / total) * 100).toFixed(1);
+                                            
+                                            return {
+                                                text: `${label}: ${value} (${percentage}%)`,
+                                                fillStyle: dataset.backgroundColor[i],
+                                                hidden: false,
+                                                index: i
+                                            };
+                                        });
+                                    }
+                                    return [];
+                                }
+                            }
                         },
                         tooltip: {
                             callbacks: {
@@ -1349,36 +1411,6 @@
                                     return `${label}: ${value} (${percentage}%)`;
                                 }
                             }
-                        }
-                    },
-                    // Add data labels directly on the chart
-                    animation: {
-                        onComplete: function() {
-                            const ctx = this.chart.ctx;
-                            ctx.font = "14px Arial";
-                            ctx.fillStyle = "#000";
-                            ctx.textAlign = "center";
-                            ctx.textBaseline = "middle";
-                            
-                            this.data.datasets.forEach((dataset, i) => {
-                                const meta = this.getDatasetMeta(i);
-                                meta.data.forEach((element, index) => {
-                                    const data = dataset.data[index];
-                                    const total = dataset.data.reduce((a, b) => a + b, 0);
-                                    const percentage = ((data / total) * 100).toFixed(1);
-                                    
-                                    const position = element.tooltipPosition();
-                                    
-                                    // White background for better readability
-                                    ctx.fillStyle = "#fff";
-                                    ctx.fillRect(position.x - 20, position.y - 10, 40, 20);
-                                    
-                                    // Black text
-                                    ctx.fillStyle = "#000";
-                                    ctx.fillText(`${data}`, position.x, position.y - 2);
-                                    ctx.fillText(`(${percentage}%)`, position.x, position.y + 10);
-                                });
-                            });
                         }
                     }
                 }
@@ -1404,6 +1436,11 @@
             canvas.className = 'chart-canvas';
             
             const container = document.getElementById('chartContainer');
+            if (!container) {
+                console.error('Chart container not found for line chart');
+                return;
+            }
+            
             const chartDiv = document.createElement('div');
             chartDiv.className = 'chart-container';
             chartDiv.innerHTML = `<h3>📈 Тенденция: ${xColumn} vs ${yColumn}</h3>`;
@@ -1411,6 +1448,11 @@
             container.appendChild(chartDiv);
             
             const ctx = canvas.getContext('2d');
+            if (!ctx) {
+                console.error('Could not get canvas context for line chart');
+                return;
+            }
+            
             const chart = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -1478,26 +1520,59 @@
             const possibleTransactionColumns = processedData.headers.filter(header => 
                 header.toLowerCase().includes('transaction') || 
                 header.toLowerCase().includes('order') ||
+                header.toLowerCase().includes('customer') ||
                 header.toLowerCase().includes('id') ||
-                header.toLowerCase().includes('номер')
+                header.toLowerCase().includes('номер') ||
+                header.toLowerCase().includes('клиент')
             );
             
             const possibleProductColumns = processedData.headers.filter(header => 
                 header.toLowerCase().includes('product') || 
                 header.toLowerCase().includes('item') ||
                 header.toLowerCase().includes('продукт') ||
-                header.toLowerCase().includes('стока')
+                header.toLowerCase().includes('стока') ||
+                header.toLowerCase().includes('name')
             );
             
-            const transactionColumn = possibleTransactionColumns[0] || processedData.headers[0];
-            const productColumn = possibleProductColumns[0] || processedData.headers[1];
+            const possibleDateColumns = processedData.headers.filter(header => 
+                header.toLowerCase().includes('date') || 
+                header.toLowerCase().includes('дата') ||
+                header.toLowerCase().includes('time')
+            );
+            
+            // Try different approaches to find transaction grouping
+            let transactionColumn = possibleTransactionColumns[0];
+            let productColumn = possibleProductColumns[0] || processedData.headers.find(h => h !== transactionColumn);
+            let dateColumn = possibleDateColumns[0];
+            
+            // If no customer ID, use date as transaction grouper
+            if (!transactionColumn && dateColumn) {
+                transactionColumn = dateColumn;
+            }
+            
+            // Fallback to first columns
+            transactionColumn = transactionColumn || processedData.headers[0];
+            productColumn = productColumn || processedData.headers[1];
+            
+            console.log('Market Basket Debug:', {
+                headers: processedData.headers,
+                transactionColumn,
+                productColumn,
+                dataRows: processedData.data.length
+            });
             
             // Group products by transaction
             const transactions = {};
             
             processedData.data.forEach(row => {
-                const transactionId = row[transactionColumn];
+                let transactionId = row[transactionColumn];
                 const product = row[productColumn];
+                
+                // If using date, group by customer+date for better transactions
+                if (dateColumn && dateColumn === transactionColumn) {
+                    const customer = row[possibleTransactionColumns[0]] || 'default';
+                    transactionId = `${customer}_${transactionId}`;
+                }
                 
                 if (transactionId && product) {
                     if (!transactions[transactionId]) {
@@ -1507,8 +1582,18 @@
                 }
             });
             
-            // Convert to array of arrays
-            return Object.values(transactions).map(set => Array.from(set));
+            // Convert to array of arrays and filter out single-item transactions
+            const transactionArrays = Object.values(transactions).map(set => Array.from(set));
+            
+            console.log('Market Basket Transactions:', {
+                totalTransactions: transactionArrays.length,
+                multiItemTransactions: transactionArrays.filter(t => t.length > 1).length,
+                avgItemsPerTransaction: transactionArrays.length > 0 ? 
+                    (transactionArrays.reduce((sum, t) => sum + t.length, 0) / transactionArrays.length).toFixed(2) : 0,
+                sampleTransactions: transactionArrays.slice(0, 3)
+            });
+            
+            return transactionArrays;
         }
         
         function findFrequentItemsets(transactions, minSupport = 0.05) {
