@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Business Intelligence Analyzer v2.3 - Table Format for Print</title>
+    <title>Business Intelligence Analyzer v2.4 - Print Table Format</title>
     <script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -564,6 +564,15 @@
             background: #5a6268;
         }
 
+        /* Screen format: Show blocks, hide tables */
+        .screen-format {
+            display: block !important;
+        }
+
+        .print-format {
+            display: none !important;
+        }
+
         /* Print styles - Show only charts and analysis results */
         @media print {
             /* Force UTF-8 encoding for proper Bulgarian text */
@@ -721,6 +730,17 @@
             /* Ensure table headers stay with content */
             .mba-table thead {
                 display: table-header-group !important;
+            }
+
+            /* Show only tables in print, hide screen format */
+            .print-format {
+                display: table !important;
+                visibility: visible !important;
+            }
+
+            .screen-format {
+                display: none !important;
+                visibility: hidden !important;
             }
             
             /* Container adjustments for print */
@@ -1767,12 +1787,31 @@
                     </div>
             `;
             
-            // Table 1: Association Rules (Products bought together)
+            // Screen format: Original blocks
             if (associationRules.length > 0) {
                 html += `
                     <div class="business-insight products">
-                        <h4>🔗 Продукти, които се купуват заедно</h4>
-                        <table class="mba-table association-table">
+                        <h4>🔗 Силни правила за асоциация:</h4>
+                        <p>Продукти, които се купуват заедно:</p>
+                        <div class="product-list screen-format">
+                `;
+                
+                associationRules.slice(0, 10).forEach(rule => {
+                    const antecedentIcon = getProductIcon(rule.antecedent[0]);
+                    const consequentIcon = getProductIcon(rule.consequent[0]);
+                    html += `
+                        <div class="product-item">
+                            <strong>${antecedentIcon} ${rule.antecedent[0]} → ${consequentIcon} ${rule.consequent[0]}</strong><br>
+                            <small>Увереност: ${(rule.confidence * 100).toFixed(1)}% | Поддръжка: ${(rule.support * 100).toFixed(1)}% | Lift: ${rule.lift.toFixed(2)}</small>
+                        </div>
+                    `;
+                });
+                
+                html += `</div>`;
+
+                // Print format: Table
+                html += `
+                        <table class="mba-table association-table print-format">
                             <thead>
                                 <tr>
                                     <th>Първи продукт</th>
@@ -1809,14 +1848,32 @@
                 const twoItemsets = frequentItemsets.filter(item => item.items.length === 2);
                 html += `
                     <div class="business-insight products">
-                        <h4>🔗 Продукти, които се купуват заедно</h4>
+                        <h4>🔗 Правила за асоциация:</h4>
                         <p><em>Не са открити силни правила за асоциация с минимална увереност от 25%.</em></p>
                 `;
                 
                 if (twoItemsets.length > 0) {
+                    // Screen format
                     html += `
                         <p><strong>Открити двойки продукти (слаба връзка):</strong></p>
-                        <table class="mba-table weak-association-table">
+                        <div class="product-list screen-format">
+                    `;
+                    twoItemsets.slice(0, 5).forEach(itemset => {
+                        const [itemA, itemB] = itemset.items;
+                        const iconA = getProductIcon(itemA);
+                        const iconB = getProductIcon(itemB);
+                        html += `
+                            <div class="product-item">
+                                <strong>${iconA} ${itemA} & ${iconB} ${itemB}</strong><br>
+                                <small>Купени заедно ${itemset.count} пъти (${(itemset.support * 100).toFixed(1)}% от всички транзакции)</small>
+                            </div>
+                        `;
+                    });
+                    html += `</div>`;
+
+                    // Print format
+                    html += `
+                        <table class="mba-table weak-association-table print-format">
                             <thead>
                                 <tr>
                                     <th>Първи продукт</th>
@@ -1851,12 +1908,33 @@
                 html += `</div>`;
             }
             
-            // Table 2: Most Popular Products
+            // Popular Products section
             if (singleItems.length > 0) {
                 html += `
                     <div class="business-insight products">
-                        <h4>⭐ Най-популярни продукти</h4>
-                        <table class="mba-table popular-products-table">
+                        <h4>⭐ Най-популярни продукти:</h4>
+                        
+                        <!-- Screen format -->
+                        <div class="product-list screen-format">
+                `;
+                
+                singleItems
+                    .sort((a, b) => b.count - a.count)
+                    .slice(0, 10)
+                    .forEach((item, index) => {
+                        const icon = getProductIcon(item.items[0]);
+                        html += `
+                            <div class="product-item">
+                                ${icon} ${item.items[0]} (${item.count} пъти)
+                            </div>
+                        `;
+                    });
+                
+                html += `</div>`;
+
+                // Print format: Table
+                html += `
+                        <table class="mba-table popular-products-table print-format">
                             <thead>
                                 <tr>
                                     <th>Позиция</th>
