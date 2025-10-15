@@ -1286,6 +1286,9 @@
             // Calculate frequent itemsets and association rules
             const results = calculateMarketBasketRules(Object.values(transactions));
             
+            // Generate Market Basket visualizations
+            displayMarketBasketCharts(results);
+            
             // Display results
             container.innerHTML = `
                 <div class="analysis-result">
@@ -1403,6 +1406,65 @@
                 avgItemsPerTransaction: avgItemsPerTransaction
             };
         }
+        
+
+        
+        function generateTopProductsChart(topItems, container) {
+            const chartDiv = document.createElement('div');
+            chartDiv.className = 'chart-container';
+            chartDiv.innerHTML = '<canvas class="chart-canvas"></canvas>';
+            container.appendChild(chartDiv);
+            
+            const canvas = chartDiv.querySelector('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Take top 10 products
+            const top10 = topItems.slice(0, 10);
+            
+            const chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: top10.map(item => item.name),
+                    datasets: [{
+                        label: 'Честота (брой транзакции)',
+                        data: top10.map(item => item.freq),
+                        backgroundColor: '#36A2EB',
+                        borderColor: '#2196F3',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Продукти'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Брой транзакции'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '🏆 Топ 10 най-популярни продукта'
+                        }
+                    }
+                }
+            });
+            
+        }
+        
+
+        
+
         
         // Business Analysis
         function generateBusinessAnalysis() {
@@ -1589,6 +1651,254 @@
                 showError('Грешка при генериране на Excel файл: ' + error.message);
                 console.error('Excel export error:', error);
             }
+        }
+
+        function displayMarketBasketCharts(results) {
+            const resultsSection = document.getElementById('analysis-results');
+            
+            // Проверка дали results.rules съществува
+            if (!results.rules || results.rules.length === 0) {
+                console.log('Няма rules данни за диаграми');
+                return;
+            }
+
+            // Създаване на контейнери за диаграмите
+            let chartContainer = document.getElementById('market-basket-charts');
+            if (!chartContainer) {
+                chartContainer = document.createElement('div');
+                chartContainer.id = 'market-basket-charts';
+                chartContainer.className = 'chart-section';
+                chartContainer.innerHTML = `
+                    <h3>Market Basket Analysis - Визуализация</h3>
+                    <div class="charts-row">
+                        <div class="chart-container">
+                            <canvas id="itemFrequencyChart"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="supportChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="charts-row">
+                        <div class="chart-container">
+                            <canvas id="confidenceChart"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="liftChart"></canvas>
+                        </div>
+                    </div>
+                `;
+                resultsSection.appendChild(chartContainer);
+            }
+
+            // Подготовка на данните за диаграмите
+            const associations = results.rules.slice(0, 10); // Топ 10 правила
+            
+            // 1. Честота на артикулите (Item Frequency)
+            const itemCounts = {};
+            associations.forEach(rule => {
+                const items = [...rule.antecedent, ...rule.consequent];
+                items.forEach(item => {
+                    itemCounts[item] = (itemCounts[item] || 0) + 1;
+                });
+            });
+            
+            const topItems = Object.entries(itemCounts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 8);
+
+            // 2. Support диаграма
+            const supportData = associations.map(rule => ({
+                rule: `${rule.antecedent.join(', ')} → ${rule.consequent.join(', ')}`,
+                support: rule.support
+            })).slice(0, 6);
+
+            // 3. Confidence диаграма  
+            const confidenceData = associations.map(rule => ({
+                rule: `${rule.antecedent.join(', ')} → ${rule.consequent.join(', ')}`,
+                confidence: rule.confidence
+            })).slice(0, 6);
+
+            // 4. Lift диаграма
+            const liftData = associations.map(rule => ({
+                rule: `${rule.antecedent.join(', ')} → ${rule.consequent.join(', ')}`,
+                lift: rule.lift
+            })).slice(0, 6);
+
+            // Създаване на диаграмите
+            setTimeout(() => {
+                // 1. Честота на артикулите
+                const itemFreqCtx = document.getElementById('itemFrequencyChart').getContext('2d');
+                new Chart(itemFreqCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: topItems.map(([item, count]) => item.length > 15 ? item.substring(0, 15) + '...' : item),
+                        datasets: [{
+                            label: 'Честота в правила',
+                            data: topItems.map(([item, count]) => count),
+                            backgroundColor: 'rgba(54, 162, 235, 0.8)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Най-често срещани артикули'
+                            },
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Брой появявания'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Артикули'
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // 2. Support диаграма
+                const supportCtx = document.getElementById('supportChart').getContext('2d');
+                new Chart(supportCtx, {
+                    type: 'horizontalBar',
+                    data: {
+                        labels: supportData.map(d => d.rule.length > 20 ? d.rule.substring(0, 20) + '...' : d.rule),
+                        datasets: [{
+                            label: 'Support',
+                            data: supportData.map(d => d.support),
+                            backgroundColor: 'rgba(255, 99, 132, 0.8)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Support на правилата'
+                            },
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                max: 1,
+                                title: {
+                                    display: true,
+                                    text: 'Support стойност'
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // 3. Confidence диаграма
+                const confidenceCtx = document.getElementById('confidenceChart').getContext('2d');
+                new Chart(confidenceCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: confidenceData.map(d => d.rule.length > 15 ? d.rule.substring(0, 15) + '...' : d.rule),
+                        datasets: [{
+                            label: 'Confidence',
+                            data: confidenceData.map(d => d.confidence),
+                            backgroundColor: 'rgba(75, 192, 192, 0.8)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Confidence на правилата'
+                            },
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 1,
+                                title: {
+                                    display: true,
+                                    text: 'Confidence стойност'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Правила'
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // 4. Lift диаграма
+                const liftCtx = document.getElementById('liftChart').getContext('2d');
+                new Chart(liftCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: liftData.map(d => d.rule.length > 15 ? d.rule.substring(0, 15) + '...' : d.rule),
+                        datasets: [{
+                            label: 'Lift',
+                            data: liftData.map(d => d.lift),
+                            backgroundColor: 'rgba(153, 102, 255, 0.8)',
+                            borderColor: 'rgba(153, 102, 255, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Lift на правилата'
+                            },
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Lift стойност'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Правила'
+                                }
+                            }
+                        }
+                    }
+                });
+
+            }, 100);
         }
     </script>
 </body>
